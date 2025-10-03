@@ -2755,6 +2755,458 @@ services:</code></pre>
 
 </div>
 
+<!-- SUBSECTION 3.1.2: requirements.txt -->
+<div class="page-break">
+<h3 style="border-bottom: 2px solid #9b59b6; padding-bottom: 10px;">
+    📄 3.1.2 requirements.txt - Python Dependencies<br>
+    תלויות Python
+</h3>
+
+<div class="bilingual-container">
+
+<!-- ENGLISH SECTION -->
+<div class="english-section">
+<h4>🎯 Purpose:</h4>
+<p>Defines all Python packages required by the SASA Software system. This file is used by pip to install dependencies in Docker containers.</p>
+
+<h4>📦 Complete Dependencies List:</h4>
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>fastapi>=0.100.0
+uvicorn>=0.20.0
+watchdog>=3.0.0
+pyjwt>=2.8.0
+requests>=2.31.0
+pydantic>=2.0.0
+python-multipart>=0.0.6
+jinja2>=3.1.0
+aiofiles>=23.0.0
+cryptography>=3.4.0
+pyyaml>=6.0.0
+python-dotenv>=1.0.0</code></pre>
+</div>
+
+<h4>📚 Package-by-Package Analysis:</h4>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">1. fastapi>=0.100.0</h5>
+<p><strong>Category:</strong> Web Framework</p>
+<p><strong>Purpose:</strong> Modern, fast web framework for building APIs</p>
+<p><strong>Usage in SASA:</strong></p>
+<ul>
+    <li>Powers the Logger Service REST API (port 8001)</li>
+    <li>Provides automatic API documentation via Swagger/OpenAPI</li>
+    <li>Handles JWT authentication middleware</li>
+    <li>Manages HTTP endpoints: <code>/log</code>, <code>/health</code></li>
+</ul>
+<p><strong>Why This Version:</strong> >=0.100.0 includes async/await improvements and better type hints</p>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">2. uvicorn>=0.20.0</h5>
+<p><strong>Category:</strong> ASGI Server</p>
+<p><strong>Purpose:</strong> Lightning-fast ASGI server implementation</p>
+<p><strong>Usage in SASA:</strong></p>
+<ul>
+    <li>Runs the FastAPI applications</li>
+    <li>Handles asynchronous request processing</li>
+    <li>Serves both logger and watcher services</li>
+    <li>Provides hot-reload during development</li>
+</ul>
+<p><strong>Key Features Used:</strong></p>
+<ul>
+    <li>HTTP/1.1 and WebSocket support</li>
+    <li>Auto-reload for development</li>
+    <li>Process management</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">3. watchdog>=3.0.0</h5>
+<p><strong>Category:</strong> File System Monitoring</p>
+<p><strong>Purpose:</strong> Cross-platform file system event monitoring</p>
+<p><strong>Usage in SASA:</strong></p>
+<ul>
+    <li><strong>CRITICAL COMPONENT:</strong> The heart of the Watcher Service</li>
+    <li>Monitors <code>./watched</code> directory for new files</li>
+    <li>Triggers events on file creation, modification, deletion</li>
+    <li>Works on Windows, Linux, and macOS</li>
+</ul>
+<p><strong>Implementation:</strong></p>
+<ul>
+    <li>Uses <code>FileSystemEventHandler</code> class</li>
+    <li>Listens for <code>on_created</code> events</li>
+    <li>Provides real-time file detection (< 1 second latency)</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">4. pyjwt>=2.8.0</h5>
+<p><strong>Category:</strong> Security/Authentication</p>
+<p><strong>Purpose:</strong> JSON Web Token implementation for Python</p>
+<p><strong>Usage in SASA:</strong></p>
+<ul>
+    <li><strong>SECURITY CRITICAL:</strong> Secures inter-service communication</li>
+    <li>Watcher creates JWT tokens before sending data to Logger</li>
+    <li>Logger validates tokens before processing requests</li>
+    <li>Uses HS256 algorithm with shared secret</li>
+</ul>
+<p><strong>Token Structure:</strong></p>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px;">
+{
+  "iss": "watcher-service",        # Issuer
+  "exp": "2025-10-03T12:40:00Z",   # Expiration (5 minutes)
+  "iat": "2025-10-03T12:35:00Z",   # Issued at
+  "filename": "example.txt"         # Custom claims
+}</pre>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">5. requests>=2.31.0</h5>
+<p><strong>Category:</strong> HTTP Client</p>
+<p><strong>Purpose:</strong> Simple, elegant HTTP requests library</p>
+<p><strong>Usage in SASA:</strong></p>
+<ul>
+    <li>Watcher Service uses it to POST metadata to Logger Service</li>
+    <li>Sends JWT token in Authorization header</li>
+    <li>Handles HTTP responses and error codes</li>
+    <li>Used by manage.py for health checks</li>
+</ul>
+<p><strong>Example Request:</strong></p>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px;">
+headers = {"Authorization": f"Bearer {jwt_token}"}
+response = requests.post(
+    "http://logger-service:8001/log",
+    json=metadata,
+    headers=headers
+)</pre>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">6. pydantic>=2.0.0</h5>
+<p><strong>Category:</strong> Data Validation</p>
+<p><strong>Purpose:</strong> Data validation using Python type hints</p>
+<p><strong>Usage in SASA:</strong></p>
+<ul>
+    <li>Validates incoming JSON data structures</li>
+    <li>Ensures file metadata has required fields</li>
+    <li>Automatic data type conversion and validation</li>
+    <li>FastAPI integration for request/response models</li>
+</ul>
+<p><strong>Example Model:</strong></p>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px;">
+class FileMetadata(BaseModel):
+    filename: str
+    created_at: str
+    file_size: int
+    hash: str</pre>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">7. python-multipart>=0.0.6</h5>
+<p><strong>Category:</strong> HTTP Parsing</p>
+<p><strong>Purpose:</strong> Parse multipart/form-data requests</p>
+<p><strong>Usage in SASA:</strong></p>
+<ul>
+    <li>Required by FastAPI for form handling</li>
+    <li>Used in configuration UIs for form submissions</li>
+    <li>Handles file uploads (if implemented)</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">8. jinja2>=3.1.0</h5>
+<p><strong>Category:</strong> Template Engine</p>
+<p><strong>Purpose:</strong> Modern template engine for Python</p>
+<p><strong>Usage in SASA:</strong></p>
+<ul>
+    <li>Renders HTML templates for configuration UIs</li>
+    <li>Used by both <code>watcher-service/config_ui.py</code> and <code>logger-service/config_ui.py</code></li>
+    <li>Templates located in <code>*/templates/config_form.html</code></li>
+    <li>Provides dynamic form generation with current config values</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">9. aiofiles>=23.0.0</h5>
+<p><strong>Category:</strong> Async File I/O</p>
+<p><strong>Purpose:</strong> Asynchronous file operations</p>
+<p><strong>Usage in SASA:</strong></p>
+<ul>
+    <li>Non-blocking file reads and writes</li>
+    <li>Used when reading file contents for hashing</li>
+    <li>Improves performance by not blocking event loop</li>
+    <li>Essential for handling multiple concurrent file operations</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">10. cryptography>=3.4.0</h5>
+<p><strong>Category:</strong> Cryptography</p>
+<p><strong>Purpose:</strong> Cryptographic recipes and primitives</p>
+<p><strong>Usage in SASA:</strong></p>
+<ul>
+    <li>Required by PyJWT for certain algorithms</li>
+    <li>Provides SHA256 hashing for file integrity</li>
+    <li>Supports RSA and other encryption methods (if needed in future)</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">11. pyyaml>=6.0.0</h5>
+<p><strong>Category:</strong> Configuration</p>
+<p><strong>Purpose:</strong> YAML parser and emitter for Python</p>
+<p><strong>Usage in SASA:</strong></p>
+<ul>
+    <li><strong>CRITICAL:</strong> Reads and writes all configuration files</li>
+    <li>Both services use <code>config.yaml</code> files</li>
+    <li>Configuration UIs read and update YAML files</li>
+    <li>Provides human-readable configuration format</li>
+</ul>
+<p><strong>Example Usage:</strong></p>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px;">
+import yaml
+with open('config.yaml', 'r') as f:
+    config = yaml.safe_load(f)</pre>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">12. python-dotenv>=1.0.0</h5>
+<p><strong>Category:</strong> Environment Management</p>
+<p><strong>Purpose:</strong> Read key-value pairs from .env file</p>
+<p><strong>Usage in SASA:</strong></p>
+<ul>
+    <li>Loads environment variables from <code>.env</code> file</li>
+    <li>Manages secrets like JWT_SECRET, SMTP credentials</li>
+    <li>Keeps sensitive data out of source code</li>
+    <li>Docker Compose automatically uses .env file</li>
+</ul>
+</div>
+
+<h4>📊 Dependency Category Summary:</h4>
+<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+    <thead style="background: #9b59b6; color: white;">
+        <tr>
+            <th style="padding: 12px; border: 1px solid #ddd;">Category</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">Packages</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">Purpose</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>Web Framework</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">fastapi, uvicorn</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">API endpoints and server</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>File Monitoring</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">watchdog, aiofiles</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">File system events and I/O</td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>Security</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">pyjwt, cryptography</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Authentication and hashing</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>HTTP</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">requests, python-multipart</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">HTTP client and parsing</td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>Data Handling</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">pydantic, pyyaml</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Validation and config</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>UI</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">jinja2</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">HTML templates</td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>Environment</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">python-dotenv</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Environment variables</td>
+        </tr>
+    </tbody>
+</table>
+
+</div>
+
+<!-- HEBREW SECTION -->
+<div class="hebrew-section">
+<h4>🎯 מטרה:</h4>
+<p>מגדיר את כל חבילות Python הנדרשות על ידי מערכת SASA Software. קובץ זה משמש את pip להתקנת תלויות במכולות Docker.</p>
+
+<h4>📦 רשימת תלויות מלאה:</h4>
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>fastapi>=0.100.0
+uvicorn>=0.20.0
+watchdog>=3.0.0
+pyjwt>=2.8.0
+requests>=2.31.0
+pydantic>=2.0.0
+python-multipart>=0.0.6
+jinja2>=3.1.0
+aiofiles>=23.0.0
+cryptography>=3.4.0
+pyyaml>=6.0.0
+python-dotenv>=1.0.0</code></pre>
+</div>
+
+<h4>📚 ניתוח חבילה אחר חבילה:</h4>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">1. fastapi>=0.100.0</h5>
+<p><strong>קטגוריה:</strong> מסגרת ווב</p>
+<p><strong>מטרה:</strong> מסגרת ווב מודרנית ומהירה לבניית APIs</p>
+<p><strong>שימוש ב-SASA:</strong></p>
+<ul>
+    <li>מפעיל את Logger Service REST API (פורט 8001)</li>
+    <li>מספק תיעוד API אוטומטי דרך Swagger/OpenAPI</li>
+    <li>מטפל ב-middleware של אימות JWT</li>
+    <li>מנהל נקודות קצה HTTP: <code>/log</code>, <code>/health</code></li>
+</ul>
+<p><strong>למה גרסה זו:</strong> >=0.100.0 כולל שיפורים ב-async/await ורמזי טיפוס טובים יותר</p>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">2. uvicorn>=0.20.0</h5>
+<p><strong>קטגוריה:</strong> שרת ASGI</p>
+<p><strong>מטרה:</strong> מימוש שרת ASGI מהיר במיוחד</p>
+<p><strong>שימוש ב-SASA:</strong></p>
+<ul>
+    <li>מריץ את אפליקציות FastAPI</li>
+    <li>מטפל בעיבוד בקשות אסינכרוני</li>
+    <li>משרת גם את שירותי logger וגם watcher</li>
+    <li>מספק טעינה חמה במהלך פיתוח</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">3. watchdog>=3.0.0</h5>
+<p><strong>קטגוריה:</strong> ניטור מערכת קבצים</p>
+<p><strong>מטרה:</strong> ניטור אירועי מערכת קבצים חוצה פלטפורמות</p>
+<p><strong>שימוש ב-SASA:</strong></p>
+<ul>
+    <li><strong>רכיב קריטי:</strong> הלב של Watcher Service</li>
+    <li>מנטר את תיקיית <code>./watched</code> לקבצים חדשים</li>
+    <li>מפעיל אירועים ביצירה, שינוי, מחיקה של קבצים</li>
+    <li>עובד על Windows, Linux ו-macOS</li>
+</ul>
+<p><strong>מימוש:</strong></p>
+<ul>
+    <li>משתמש במחלקה <code>FileSystemEventHandler</code></li>
+    <li>מאזין לאירועי <code>on_created</code></li>
+    <li>מספק זיהוי קבצים בזמן אמת (< שנייה אחת של עיכוב)</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">4. pyjwt>=2.8.0</h5>
+<p><strong>קטגוריה:</strong> אבטחה/אימות</p>
+<p><strong>מטרה:</strong> מימוש JSON Web Token עבור Python</p>
+<p><strong>שימוש ב-SASA:</strong></p>
+<ul>
+    <li><strong>קריטי לאבטחה:</strong> מאבטח תקשורת בין-שירותית</li>
+    <li>Watcher יוצר אסימוני JWT לפני שליחת נתונים ל-Logger</li>
+    <li>Logger מאמת אסימונים לפני עיבוד בקשות</li>
+    <li>משתמש באלגוריתם HS256 עם סוד משותף</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">5. requests>=2.31.0</h5>
+<p><strong>קטגוריה:</strong> לקוח HTTP</p>
+<p><strong>מטרה:</strong> ספריית בקשות HTTP פשוטה ואלגנטית</p>
+<p><strong>שימוש ב-SASA:</strong></p>
+<ul>
+    <li>Watcher Service משתמש בה ל-POST מטא-נתונים ל-Logger Service</li>
+    <li>שולח אסימון JWT בכותרת Authorization</li>
+    <li>מטפל בתשובות HTTP וקודי שגיאה</li>
+    <li>משמש את manage.py לבדיקות בריאות</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">11. pyyaml>=6.0.0</h5>
+<p><strong>קטגוריה:</strong> הגדרות</p>
+<p><strong>מטרה:</strong> מנתח ופולט YAML עבור Python</p>
+<p><strong>שימוש ב-SASA:</strong></p>
+<ul>
+    <li><strong>קריטי:</strong> קורא וכותב את כל קבצי ההגדרות</li>
+    <li>שני השירותים משתמשים בקבצי <code>config.yaml</code></li>
+    <li>ממשקי ההגדרות קוראים ומעדכנים קבצי YAML</li>
+    <li>מספק פורמט הגדרות קריא לאדם</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">12. python-dotenv>=1.0.0</h5>
+<p><strong>קטגוריה:</strong> ניהול סביבה</p>
+<p><strong>מטרה:</strong> קורא זוגות מפתח-ערך מקובץ .env</p>
+<p><strong>שימוש ב-SASA:</strong></p>
+<ul>
+    <li>טוען משתני סביבה מקובץ <code>.env</code></li>
+    <li>מנהל סודות כמו JWT_SECRET, אישורי SMTP</li>
+    <li>שומר נתונים רגישים מחוץ לקוד מקור</li>
+    <li>Docker Compose משתמש אוטומטית בקובץ .env</li>
+</ul>
+</div>
+
+<h4>📊 סיכום קטגוריות תלויות:</h4>
+<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+    <thead style="background: #9b59b6; color: white;">
+        <tr>
+            <th style="padding: 12px; border: 1px solid #ddd;">קטגוריה</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">חבילות</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">מטרה</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>מסגרת ווב</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">fastapi, uvicorn</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">נקודות קצה API ושרת</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>ניטור קבצים</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">watchdog, aiofiles</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">אירועי מערכת קבצים ו-I/O</td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>אבטחה</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">pyjwt, cryptography</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">אימות והצפנה</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>HTTP</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">requests, python-multipart</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">לקוח HTTP וניתוח</td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>טיפול בנתונים</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">pydantic, pyyaml</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">אימות והגדרות</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>ממשק משתמש</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">jinja2</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">תבניות HTML</td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>סביבה</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">python-dotenv</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">משתני סביבה</td>
+        </tr>
+    </tbody>
+</table>
+
+</div>
+
+</div>
+
 </div>
 
 </body>

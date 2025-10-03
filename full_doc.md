@@ -3775,5 +3775,691 @@ logger-config  : ✅ Running</pre>
 
 </div>
 
+<!-- SUBSECTION 3.1.4: Startup Scripts -->
+<div class="page-break">
+<h3 style="border-bottom: 2px solid #9b59b6; padding-bottom: 10px;">
+    📄 3.1.4 Startup Scripts - Quick Start Automation<br>
+    סקריפטי הפעלה - אוטומציה להפעלה מהירה
+</h3>
+
+<div class="bilingual-container">
+
+<!-- ENGLISH SECTION -->
+<div class="english-section">
+<h4>🎯 Purpose:</h4>
+<p>Provide platform-specific startup scripts that automate the process of starting all SASA Software services. These scripts handle Docker orchestration and provide user-friendly output.</p>
+
+<h4>📋 Available Startup Scripts:</h4>
+<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+    <thead style="background: #9b59b6; color: white;">
+        <tr>
+            <th style="padding: 12px; border: 1px solid #ddd;">Script</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">Platform</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">Lines</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">Usage</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>start.sh</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Linux / macOS</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">90 lines</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>./start.sh</code></td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>start.bat</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Windows (CMD)</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">89 lines</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>start.bat</code></td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>start.ps1</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Windows (PowerShell)</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">90 lines</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>.\start.ps1</code></td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>start_windows.bat</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Windows Alternative</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">~80 lines</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>start_windows.bat</code></td>
+        </tr>
+    </tbody>
+</table>
+
+<h4>🔍 Common Features Across All Scripts:</h4>
+<div style="background: #e8f4fd; padding: 15px; border-radius: 5px; border-left: 5px solid #0066cc; margin: 20px 0;">
+<h5>1. Docker Verification</h5>
+<ul>
+    <li>Checks if Docker is installed</li>
+    <li>Verifies Docker Compose is available</li>
+    <li>Exits with error message if not found</li>
+</ul>
+
+<h5>2. Environment File Setup</h5>
+<ul>
+    <li>Checks for <code>.env</code> file existence</li>
+    <li>Creates from <code>.env.example</code> if missing</li>
+    <li>Prompts user to configure before continuing</li>
+</ul>
+
+<h5>3. Directory Creation</h5>
+<ul>
+    <li>Creates <code>watched/</code>, <code>processed/</code>, <code>logs/</code>, <code>temp/</code> directories</li>
+    <li>Safe creation (no error if exists)</li>
+    <li>Reports directory creation status</li>
+</ul>
+
+<h5>4. Service Orchestration</h5>
+<ul>
+    <li>Stops any existing containers</li>
+    <li>Builds and starts all services using Docker Compose</li>
+    <li>Runs containers in detached mode (background)</li>
+</ul>
+
+<h5>5. Health Checks</h5>
+<ul>
+    <li>Waits 10 seconds for services to initialize</li>
+    <li>Checks each service endpoint:
+        <ul>
+            <li>Logger Service: <code>http://localhost:8001/health</code></li>
+            <li>Watcher Config UI: <code>http://localhost:8080/</code></li>
+            <li>Logger Config UI: <code>http://localhost:8081/</code></li>
+        </ul>
+    </li>
+    <li>Reports success/failure for each service</li>
+</ul>
+
+<h5>6. User Information</h5>
+<ul>
+    <li>Displays service endpoints</li>
+    <li>Shows directory locations</li>
+    <li>Provides management commands</li>
+    <li>Gives usage instructions</li>
+</ul>
+</div>
+
+<h4>📝 Detailed Analysis: start.sh (Linux/macOS)</h4>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Key Sections:</h5>
+
+<h6>Lines 1-17: Docker Verification</h6>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>#!/bin/bash
+
+echo "🚀 Starting SASA Software Microservices..."
+
+# Check if Docker is installed
+if ! command -v docker &> /dev/null; then
+    echo "❌ Docker is not installed. Please install Docker first."
+    exit 1
+fi
+
+if ! command -v docker-compose &> /dev/null; then
+    echo "❌ Docker Compose is not installed. Please install Docker Compose first."
+    exit 1
+fi</code></pre>
+<p><strong>Explanation:</strong></p>
+<ul>
+    <li><code>#!/bin/bash</code> - Bash shebang for script execution</li>
+    <li><code>command -v docker</code> - Checks if docker command exists</li>
+    <li><code>&> /dev/null</code> - Redirects all output to null (silences output)</li>
+    <li><code>exit 1</code> - Exits with error code 1 on failure</li>
+</ul>
+
+<h6>Lines 19-25: Environment File Check</h6>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code># Check if .env file exists, if not create from example
+if [ ! -f .env ]; then
+    echo "📝 Creating .env file from example..."
+    cp .env.example .env
+    echo "✅ Please edit .env file with your configuration before running again."
+    exit 1
+fi</code></pre>
+<p><strong>Safety Feature:</strong> Prevents running without proper configuration</p>
+
+<h6>Lines 27-28: Directory Creation</h6>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code># Create directories if they don't exist
+mkdir -p watched processed logs temp</code></pre>
+<p><strong>Note:</strong> <code>-p</code> flag creates parent directories and doesn't error if exists</p>
+
+<h6>Lines 30-36: Docker Compose Commands</h6>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code># Stop any existing containers
+echo "🛑 Stopping existing containers..."
+docker-compose down
+
+# Build and start services
+echo "🔨 Building and starting services..."
+docker-compose up --build -d</code></pre>
+<p><strong>Commands:</strong></p>
+<ul>
+    <li><code>docker-compose down</code> - Stops and removes containers</li>
+    <li><code>docker-compose up --build -d</code> - Builds images and starts containers in background</li>
+</ul>
+
+<h6>Lines 46-70: Health Check Logic</h6>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code># Check Logger Service
+if curl -s http://localhost:8001/health > /dev/null; then
+    echo "✅ Logger Service is running on http://localhost:8001"
+else
+    echo "❌ Logger Service failed to start"
+fi
+
+# Check Watcher Service (health endpoint)
+if curl -s http://localhost:8000/health > /dev/null; then
+    echo "✅ Watcher Service is running"
+else
+    echo "❌ Watcher Service failed to start"
+fi
+
+# Check Configuration UIs
+if curl -s http://localhost:8080/ > /dev/null; then
+    echo "✅ Watcher Config UI is running on http://localhost:8080"
+else
+    echo "❌ Watcher Config UI failed to start"
+fi</code></pre>
+<p><strong>How It Works:</strong></p>
+<ul>
+    <li><code>curl -s</code> - Silent mode (no progress bar)</li>
+    <li><code>> /dev/null</code> - Discard output, only check exit code</li>
+    <li>Exit code 0 = success, non-zero = failure</li>
+</ul>
+</div>
+
+<h4>📝 Detailed Analysis: start.bat (Windows CMD)</h4>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Key Differences from Bash Version:</h5>
+
+<h6>Docker Check (Windows Style):</h6>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>@echo off
+echo 🚀 Starting SASA Software Microservices...
+
+REM Check if Docker is installed
+docker --version >nul 2>&1
+if %errorlevel% neq 0 (
+    echo ❌ Docker is not installed. Please install Docker first.
+    exit /b 1
+)</code></pre>
+<p><strong>Windows Specifics:</strong></p>
+<ul>
+    <li><code>@echo off</code> - Disables command echoing</li>
+    <li><code>REM</code> - Comment syntax in batch files</li>
+    <li><code>>nul 2>&1</code> - Redirects both stdout and stderr to null</li>
+    <li><code>%errorlevel%</code> - Exit code of last command</li>
+    <li><code>exit /b 1</code> - Exits batch file with code 1</li>
+</ul>
+
+<h6>Directory Creation:</h6>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>REM Create directories if they don't exist
+if not exist watched mkdir watched
+if not exist processed mkdir processed
+if not exist logs mkdir logs
+if not exist temp mkdir temp</code></pre>
+
+<h6>Health Check with curl:</h6>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>curl -s http://localhost:8001/health >nul 2>&1
+if %errorlevel% equ 0 (
+    echo ✅ Logger Service is running on http://localhost:8001
+) else (
+    echo ❌ Logger Service failed to start
+)</code></pre>
+
+<h6>Pause at End:</h6>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>pause</code></pre>
+<p><strong>Purpose:</strong> Keeps window open so user can read output</p>
+</div>
+
+<h4>📝 Detailed Analysis: start.ps1 (PowerShell)</h4>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">PowerShell-Specific Features:</h5>
+
+<h6>Colored Output:</h6>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>Write-Host "🚀 Starting SASA Software Microservices..." -ForegroundColor Green
+Write-Host "❌ Docker is not installed." -ForegroundColor Red
+Write-Host "📦 Installing Python dependencies..." -ForegroundColor Yellow</code></pre>
+<p><strong>Colors Used:</strong></p>
+<ul>
+    <li>Green - Success messages</li>
+    <li>Red - Error messages</li>
+    <li>Yellow - Warning/info messages</li>
+    <li>Cyan - Headers/labels</li>
+</ul>
+
+<h6>Try-Catch Error Handling:</h6>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>try {
+    $pythonVersion = python --version 2>&1
+    Write-Host "✅ Python found: $pythonVersion" -ForegroundColor Green
+}
+catch {
+    Write-Host "❌ Python is not installed." -ForegroundColor Red
+    Read-Host "Press Enter to exit"
+    exit 1
+}</code></pre>
+
+<h6>Directory Creation with Arrays:</h6>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>$directories = @("watched", "processed", "logs", "temp")
+foreach ($dir in $directories) {
+    if (-not (Test-Path $dir)) {
+        New-Item -ItemType Directory -Path $dir | Out-Null
+        Write-Host "📁 Created directory: $dir" -ForegroundColor Cyan
+    }
+}</code></pre>
+
+<h6>HTTP Request with PowerShell:</h6>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>try {
+    $response = Invoke-WebRequest -Uri "http://localhost:8001/health" -TimeoutSec 5 -ErrorAction Stop
+    Write-Host "✅ Logger Service is running" -ForegroundColor Green
+}
+catch {
+    Write-Host "⚠️ Logger Service may not be ready yet" -ForegroundColor Yellow
+}</code></pre>
+</div>
+
+<h4>📊 Comparison Matrix:</h4>
+<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+    <thead style="background: #9b59b6; color: white;">
+        <tr>
+            <th style="padding: 12px; border: 1px solid #ddd;">Feature</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">start.sh</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">start.bat</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">start.ps1</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>Platform</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Linux/macOS</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Windows CMD</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Windows PS</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>Colored Output</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Emoji only</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Emoji only</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Full color</td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>Error Handling</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Exit codes</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">errorlevel</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Try-Catch</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>HTTP Checks</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">curl</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">curl</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Invoke-WebRequest</td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>User Experience</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Good</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Good</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Best</td>
+        </tr>
+    </tbody>
+</table>
+
+<h4>💡 Usage Recommendations:</h4>
+<div style="background: #d4edda; padding: 15px; border-radius: 5px; border-left: 5px solid #28a745; margin: 20px 0;">
+<ul>
+    <li><strong>Linux/macOS:</strong> Use <code>start.sh</code> - Native and efficient</li>
+    <li><strong>Windows 10+:</strong> Use <code>start.ps1</code> - Best features and error handling</li>
+    <li><strong>Windows (older):</strong> Use <code>start.bat</code> - Compatible with all Windows versions</li>
+    <li><strong>First Time:</strong> Make sure to edit <code>.env</code> file with your settings</li>
+</ul>
+</div>
+
+</div>
+
+<!-- HEBREW SECTION -->
+<div class="hebrew-section">
+<h4>🎯 מטרה:</h4>
+<p>לספק סקריפטי הפעלה ספציפיים לפלטפורמה שמאוטמטים את תהליך הפעלת כל שירותי SASA Software. סקריפטים אלה מטפלים בתזמור Docker ומספקים פלט ידידותי למשתמש.</p>
+
+<h4>📋 סקריפטי הפעלה זמינים:</h4>
+<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+    <thead style="background: #9b59b6; color: white;">
+        <tr>
+            <th style="padding: 12px; border: 1px solid #ddd;">סקריפט</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">פלטפורמה</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">שורות</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">שימוש</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>start.sh</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Linux / macOS</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">90 שורות</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>./start.sh</code></td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>start.bat</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Windows (CMD)</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">89 שורות</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>start.bat</code></td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>start.ps1</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Windows (PowerShell)</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">90 שורות</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>.\start.ps1</code></td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>start_windows.bat</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Windows חלופי</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">~80 שורות</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>start_windows.bat</code></td>
+        </tr>
+    </tbody>
+</table>
+
+<h4>🔍 תכונות משותפות בכל הסקריפטים:</h4>
+<div style="background: #e8f4fd; padding: 15px; border-radius: 5px; border-right: 5px solid #0066cc; margin: 20px 0;">
+<h5>1. אימות Docker</h5>
+<ul>
+    <li>בודק אם Docker מותקן</li>
+    <li>מאמת ש-Docker Compose זמין</li>
+    <li>יוצא עם הודעת שגיאה אם לא נמצא</li>
+</ul>
+
+<h5>2. הגדרת קובץ סביבה</h5>
+<ul>
+    <li>בודק קיום קובץ <code>.env</code></li>
+    <li>יוצר מ-<code>.env.example</code> אם חסר</li>
+    <li>מבקש מהמשתמש להגדיר לפני המשך</li>
+</ul>
+
+<h5>3. יצירת תיקיות</h5>
+<ul>
+    <li>יוצר תיקיות <code>watched/</code>, <code>processed/</code>, <code>logs/</code>, <code>temp/</code></li>
+    <li>יצירה בטוחה (אין שגיאה אם קיים)</li>
+    <li>מדווח על סטטוס יצירת תיקיה</li>
+</ul>
+
+<h5>4. תזמור שירותים</h5>
+<ul>
+    <li>עוצר כל מכולות קיימות</li>
+    <li>בונה ומפעיל את כל השירותים באמצעות Docker Compose</li>
+    <li>מריץ מכולות במצב מנותק (רקע)</li>
+</ul>
+
+<h5>5. בדיקות בריאות</h5>
+<ul>
+    <li>ממתין 10 שניות לאתחול שירותים</li>
+    <li>בודק כל נקודת קצה של שירות</li>
+    <li>מדווח הצלחה/כישלון לכל שירות</li>
+</ul>
+
+<h5>6. מידע למשתמש</h5>
+<ul>
+    <li>מציג נקודות קצה של שירות</li>
+    <li>מראה מיקומי תיקיות</li>
+    <li>מספק פקודות ניהול</li>
+    <li>נותן הוראות שימוש</li>
+</ul>
+</div>
+
+<h4>📊 מטריצת השוואה:</h4>
+<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+    <thead style="background: #9b59b6; color: white;">
+        <tr>
+            <th style="padding: 12px; border: 1px solid #ddd;">תכונה</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">start.sh</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">start.bat</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">start.ps1</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>פלטפורמה</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Linux/macOS</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Windows CMD</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Windows PS</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>פלט צבעוני</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">רק אמוג'י</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">רק אמוג'י</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">צבע מלא</td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>טיפול בשגיאות</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">קודי יציאה</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">errorlevel</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Try-Catch</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>בדיקות HTTP</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">curl</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">curl</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Invoke-WebRequest</td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>חוויית משתמש</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">טובה</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">טובה</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">הטובה ביותר</td>
+        </tr>
+    </tbody>
+</table>
+
+<h4>💡 המלצות שימוש:</h4>
+<div style="background: #d4edda; padding: 15px; border-radius: 5px; border-right: 5px solid #28a745; margin: 20px 0;">
+<ul>
+    <li><strong>Linux/macOS:</strong> השתמש ב-<code>start.sh</code> - מקורי ויעיל</li>
+    <li><strong>Windows 10+:</strong> השתמש ב-<code>start.ps1</code> - תכונות ולטיפול בשגיאות הטוב ביותר</li>
+    <li><strong>Windows (ישן יותר):</strong> השתמש ב-<code>start.bat</code> - תואם לכל גרסאות Windows</li>
+    <li><strong>פעם ראשונה:</strong> וודא לערוך את קובץ <code>.env</code> עם ההגדרות שלך</li>
+</ul>
+</div>
+
+</div>
+
+</div>
+
+<!-- SECTION 3.1 SUMMARY -->
+<div class="page-break">
+<h2 style="text-align: center; border-bottom: 2px solid #9b59b6; padding-bottom: 15px;">
+    📋 Section 3.1 Summary - Root Directory Files<br>
+    סיכום סעיף 3.1 - קבצי תיקיית השורש
+</h2>
+
+<div class="bilingual-container">
+
+<!-- ENGLISH SECTION -->
+<div class="english-section">
+<h3>🎯 What We've Covered:</h3>
+<p>We've completed an in-depth analysis of all root directory files that control system orchestration, dependencies, management, and startup automation.</p>
+
+<h4>📊 Files Analyzed:</h4>
+<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+    <thead style="background: #9b59b6; color: white;">
+        <tr>
+            <th style="padding: 12px; border: 1px solid #ddd;">File</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">Lines</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">Purpose</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">Importance</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>docker-compose.yml</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">106</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Container orchestration</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">⭐⭐⭐⭐⭐</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>requirements.txt</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">12</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Python dependencies</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">⭐⭐⭐⭐⭐</td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>manage.py</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">219</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">System management CLI</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">⭐⭐⭐⭐</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>start.sh/bat/ps1</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">~90</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Startup automation</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">⭐⭐⭐⭐</td>
+        </tr>
+    </tbody>
+</table>
+
+<h4>🔑 Key Takeaways:</h4>
+<ol>
+    <li><strong>Docker Compose</strong> is the backbone of service orchestration
+        <ul>
+            <li>4 services: logger, watcher, and 2 config UIs</li>
+            <li>1 custom network for inter-service communication</li>
+            <li>3 persistent volumes for data retention</li>
+        </ul>
+    </li>
+    <li><strong>Python Dependencies</strong> are carefully chosen
+        <ul>
+            <li>12 packages covering web, security, file monitoring, and data handling</li>
+            <li>All modern, well-maintained libraries</li>
+            <li>Minimal footprint for efficient containers</li>
+        </ul>
+    </li>
+    <li><strong>Management Tools</strong> provide flexibility
+        <ul>
+            <li>Python CLI (manage.py) for cross-platform management</li>
+            <li>Platform-specific startup scripts for easy deployment</li>
+            <li>8 management commands covering all operations</li>
+        </ul>
+    </li>
+</ol>
+
+<h4>🎓 Skills You've Learned:</h4>
+<div style="background: #d4edda; padding: 15px; border-radius: 5px; border-left: 5px solid #28a745;">
+<ul>
+    <li>✅ How to read and understand Docker Compose configurations</li>
+    <li>✅ Purpose and role of each Python package</li>
+    <li>✅ System management with command-line tools</li>
+    <li>✅ Cross-platform scripting differences and best practices</li>
+    <li>✅ Service orchestration and health checking</li>
+</ul>
+</div>
+
+<h4>📌 Next Section Preview:</h4>
+<p>In Section 3.2, we'll dive deep into the <code>shared/</code> directory, examining common utilities used by both services:</p>
+<ul>
+    <li>📄 <code>jwt_manager.py</code> - JWT token creation and validation</li>
+    <li>📄 <code>utils.py</code> - Configuration management, notifications, and logging utilities</li>
+</ul>
+
+</div>
+
+<!-- HEBREW SECTION -->
+<div class="hebrew-section">
+<h3>🎯 מה כיסינו:</h3>
+<p>השלמנו ניתוח מעמיק של כל קבצי תיקיית השורש השולטים בתזמור מערכת, תלויות, ניהול ואוטומציה של הפעלה.</p>
+
+<h4>📊 קבצים שנותחו:</h4>
+<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+    <thead style="background: #9b59b6; color: white;">
+        <tr>
+            <th style="padding: 12px; border: 1px solid #ddd;">קובץ</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">שורות</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">מטרה</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">חשיבות</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>docker-compose.yml</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">106</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">תזמור מכולות</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">⭐⭐⭐⭐⭐</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>requirements.txt</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">12</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">תלויות Python</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">⭐⭐⭐⭐⭐</td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>manage.py</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">219</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">CLI ניהול מערכת</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">⭐⭐⭐⭐</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>start.sh/bat/ps1</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">~90</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">אוטומציה של הפעלה</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">⭐⭐⭐⭐</td>
+        </tr>
+    </tbody>
+</table>
+
+<h4>🔑 נקודות מפתח:</h4>
+<ol>
+    <li><strong>Docker Compose</strong> הוא עמוד השדרה של תזמור שירותים
+        <ul>
+            <li>4 שירותים: logger, watcher, ו-2 ממשקי הגדרות</li>
+            <li>רשת מותאמת אישית אחת לתקשורת בין-שירותית</li>
+            <li>3 נפחים מתמשכים לשמירת נתונים</li>
+        </ul>
+    </li>
+    <li><strong>תלויות Python</strong> נבחרו בקפידה
+        <ul>
+            <li>12 חבילות המכסות ווב, אבטחה, ניטור קבצים וטיפול בנתונים</li>
+            <li>כל הספריות מודרניות ומתוחזקות היטב</li>
+            <li>טביעת רגל מינימלית למכולות יעילות</li>
+        </ul>
+    </li>
+    <li><strong>כלי ניהול</strong> מספקים גמישות
+        <ul>
+            <li>Python CLI (manage.py) לניהול חוצה פלטפורמות</li>
+            <li>סקריפטי הפעלה ספציפיים לפלטפורמה לפריסה קלה</li>
+            <li>8 פקודות ניהול המכסות את כל הפעולות</li>
+        </ul>
+    </li>
+</ol>
+
+<h4>🎓 מיומנויות שלמדת:</h4>
+<div style="background: #d4edda; padding: 15px; border-radius: 5px; border-right: 5px solid #28a745;">
+<ul>
+    <li>✅ איך לקרוא ולהבין הגדרות Docker Compose</li>
+    <li>✅ מטרה ותפקיד של כל חבילת Python</li>
+    <li>✅ ניהול מערכת עם כלי שורת פקודה</li>
+    <li>✅ הבדלי סקריפטים חוצי פלטפורמות ושיטות עבודה מומלצות</li>
+    <li>✅ תזמור שירותים ובדיקות בריאות</li>
+</ul>
+</div>
+
+<h4>📌 תצוגה מקדימה של הסעיף הבא:</h4>
+<p>בסעיף 3.2, נצלול לעומק לתוך תיקיית <code>shared/</code>, ונבחן כלי עזר משותפים המשמשים את שני השירותים:</p>
+<ul>
+    <li>📄 <code>jwt_manager.py</code> - יצירה ואימות אסימוני JWT</li>
+    <li>📄 <code>utils.py</code> - ניהול הגדרות, התראות וכלי רישום</li>
+</ul>
+
+</div>
+
+</div>
+
+</div>
+
 </body>
 </html>

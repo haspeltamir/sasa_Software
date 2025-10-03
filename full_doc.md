@@ -3209,5 +3209,571 @@ python-dotenv>=1.0.0</code></pre>
 
 </div>
 
+<!-- SUBSECTION 3.1.3: manage.py -->
+<div class="page-break">
+<h3 style="border-bottom: 2px solid #9b59b6; padding-bottom: 10px;">
+    📄 3.1.3 manage.py - System Management Script<br>
+    סקריפט ניהול מערכת
+</h3>
+
+<div class="bilingual-container">
+
+<!-- ENGLISH SECTION -->
+<div class="english-section">
+<h4>🎯 Purpose:</h4>
+<p>A comprehensive command-line management tool that provides easy-to-use commands for controlling, monitoring, and maintaining the SASA Software microservices system.</p>
+
+<h4>📋 File Overview:</h4>
+<div style="background: #e8f4fd; padding: 15px; border-radius: 5px; border-left: 5px solid #0066cc;">
+<strong>Language:</strong> Python 3<br>
+<strong>Total Lines:</strong> 219 lines<br>
+<strong>Main Class:</strong> SASAManager<br>
+<strong>Commands Available:</strong> 8 commands<br>
+<strong>Usage:</strong> <code>python manage.py [command]</code>
+</div>
+
+<h4>📚 Available Commands:</h4>
+<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+    <thead style="background: #9b59b6; color: white;">
+        <tr>
+            <th style="padding: 12px; border: 1px solid #ddd;">Command</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">Description</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">Example</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>start</code></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Start all services</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>python manage.py start</code></td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>stop</code></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Stop all services</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>python manage.py stop</code></td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>restart</code></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Restart all services</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>python manage.py restart</code></td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>status</code></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Check service health</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>python manage.py status</code></td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>logs</code></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">View service logs</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>python manage.py logs -f</code></td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>stats</code></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Show system statistics</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>python manage.py stats</code></td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>cleanup</code></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Clean processed files</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>python manage.py cleanup</code></td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>test</code></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Run system tests</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>python manage.py test</code></td>
+        </tr>
+    </tbody>
+</table>
+
+<h4>🔍 Detailed Code Analysis:</h4>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 1-15: Imports and Header</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>#!/usr/bin/env python3
+
+"""
+SASA Software Management Script
+Provides easy management commands for the microservices system
+"""
+
+import argparse
+import os
+import sys
+import subprocess
+import time
+import requests
+from pathlib import Path</code></pre>
+<p><strong>Line-by-Line Explanation:</strong></p>
+<ul>
+    <li><strong>Line 1:</strong> Shebang - makes script executable on Unix systems</li>
+    <li><strong>Lines 3-6:</strong> Module docstring describing purpose</li>
+    <li><strong>Line 8:</strong> <code>argparse</code> - Command-line argument parsing</li>
+    <li><strong>Line 9-10:</strong> <code>os, sys</code> - Operating system and Python system interactions</li>
+    <li><strong>Line 11:</strong> <code>subprocess</code> - Execute external commands (docker-compose)</li>
+    <li><strong>Line 12:</strong> <code>time</code> - Delays and timing functions</li>
+    <li><strong>Line 13:</strong> <code>requests</code> - HTTP client for health checks</li>
+    <li><strong>Line 14:</strong> <code>pathlib.Path</code> - Modern path manipulation</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 16-24: SASAManager Class Initialization</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>class SASAManager:
+    """Management class for SASA Software services"""
+    
+    def __init__(self):
+        self.services = {
+            'logger': 'http://localhost:8001',
+            'watcher-config': 'http://localhost:8080', 
+            'logger-config': 'http://localhost:8081'
+        }</code></pre>
+<p><strong>Explanation:</strong></p>
+<ul>
+    <li><strong>Line 16:</strong> Defines the SASAManager class</li>
+    <li><strong>Lines 19-24:</strong> Initializes service URLs dictionary
+        <ul>
+            <li><code>logger</code> - Logger service API endpoint</li>
+            <li><code>watcher-config</code> - Watcher configuration UI</li>
+            <li><code>logger-config</code> - Logger configuration UI</li>
+        </ul>
+    </li>
+    <li>These URLs are used for health checks and status monitoring</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 26-33: check_docker() Method</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>def check_docker(self):
+    """Check if Docker is available"""
+    try:
+        subprocess.run(['docker', '--version'], capture_output=True, check=True)
+        subprocess.run(['docker-compose', '--version'], capture_output=True, check=True)
+        return True
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return False</code></pre>
+<p><strong>Purpose:</strong> Verify Docker and Docker Compose are installed</p>
+<p><strong>How It Works:</strong></p>
+<ul>
+    <li><strong>Line 29:</strong> Runs <code>docker --version</code> command</li>
+    <li><strong>Line 30:</strong> Runs <code>docker-compose --version</code> command</li>
+    <li><code>capture_output=True</code> - Suppresses output to console</li>
+    <li><code>check=True</code> - Raises exception if command fails</li>
+    <li>Returns <code>True</code> if both commands succeed, <code>False</code> otherwise</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 35-61: start_services() Method</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>def start_services(self):
+    """Start all services using Docker Compose"""
+    print("🚀 Starting SASA Software services...")
+    
+    if not self.check_docker():
+        print("❌ Docker or Docker Compose not found. Please install Docker first.")
+        return False
+    
+    # Create directories
+    dirs = ['watched', 'processed', 'logs', 'temp']
+    for dir_name in dirs:
+        Path(dir_name).mkdir(exist_ok=True)
+        print(f"📁 Created directory: {dir_name}")
+    
+    # Start services
+    try:
+        subprocess.run(['docker-compose', 'up', '--build', '-d'], check=True)
+        print("⏳ Waiting for services to start...")
+        time.sleep(10)
+        
+        # Check service health
+        self.check_status()
+        return True
+        
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Failed to start services: {e}")
+        return False</code></pre>
+<p><strong>Step-by-Step Process:</strong></p>
+<ol>
+    <li><strong>Line 39:</strong> Verify Docker is installed</li>
+    <li><strong>Lines 44-47:</strong> Create required directories if they don't exist
+        <ul>
+            <li><code>exist_ok=True</code> - Don't error if directory exists</li>
+        </ul>
+    </li>
+    <li><strong>Line 51:</strong> Execute <code>docker-compose up --build -d</code>
+        <ul>
+            <li><code>--build</code> - Rebuild images before starting</li>
+            <li><code>-d</code> - Detached mode (run in background)</li>
+        </ul>
+    </li>
+    <li><strong>Line 53:</strong> Wait 10 seconds for services to initialize</li>
+    <li><strong>Line 56:</strong> Run health check on all services</li>
+</ol>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 63-79: stop_services() and restart_services()</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>def stop_services(self):
+    """Stop all services"""
+    print("🛑 Stopping SASA Software services...")
+    try:
+        subprocess.run(['docker-compose', 'down'], check=True)
+        print("✅ Services stopped successfully")
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Failed to stop services: {e}")
+        return False
+
+def restart_services(self):
+    """Restart all services"""
+    print("🔄 Restarting SASA Software services...")
+    self.stop_services()
+    time.sleep(2)
+    return self.start_services()</code></pre>
+<p><strong>Key Points:</strong></p>
+<ul>
+    <li><code>stop_services()</code> - Executes <code>docker-compose down</code></li>
+    <li><code>restart_services()</code> - Stops services, waits 2 seconds, then starts them</li>
+    <li>Error handling with try-except blocks</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 81-108: check_status() Method</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>def check_status(self):
+    """Check status of all services"""
+    print("🔍 Checking service status...")
+    
+    # Check Logger Service
+    try:
+        response = requests.get(f"{self.services['logger']}/health", timeout=5)
+        if response.status_code == 200:
+            data = response.json()
+            print(f"✅ Logger Service: {data.get('status', 'unknown')}")
+            print(f"   Processed files: {data.get('processed_files_count', 0)}")
+            print(f"   Uptime: {data.get('uptime_seconds', 0)}s")
+        else:
+            print(f"⚠️ Logger Service: HTTP {response.status_code}")
+    except requests.exceptions.RequestException:
+        print("❌ Logger Service: Not responding")
+    
+    # Check Configuration UIs
+    for name, url in [('Watcher Config UI', self.services['watcher-config']), 
+                     ('Logger Config UI', self.services['logger-config'])]:
+        try:
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                print(f"✅ {name}: Running")
+            else:
+                print(f"⚠️ {name}: HTTP {response.status_code}")
+        except requests.exceptions.RequestException:
+            print(f"❌ {name}: Not responding")</code></pre>
+<p><strong>Functionality:</strong></p>
+<ul>
+    <li>Makes HTTP requests to each service's health endpoint</li>
+    <li>For Logger Service: displays detailed health info including:
+        <ul>
+            <li>Service status</li>
+            <li>Number of processed files</li>
+            <li>Uptime in seconds</li>
+        </ul>
+    </li>
+    <li>For Config UIs: simple up/down check</li>
+    <li><code>timeout=5</code> - Wait max 5 seconds for response</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 123-152: show_stats() Method</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>def show_stats(self):
+    """Show system statistics"""
+    print("📊 SASA Software Statistics")
+    print("=" * 40)
+    
+    # Count files in directories
+    dirs = {
+        'Watched': 'watched',
+        'Processed': 'processed', 
+        'Logs': 'logs'
+    }
+    
+    for name, path in dirs.items():
+        dir_path = Path(path)
+        if dir_path.exists():
+            files = list(dir_path.glob('*'))
+            files = [f for f in files if f.is_file()]
+            print(f"{name:12}: {len(files)} files")
+        else:
+            print(f"{name:12}: Directory not found")
+    
+    # Service status
+    print("\n🔧 Service Status:")
+    for name, url in self.services.items():
+        try:
+            response = requests.get(url if 'health' in url else f"{url}/health" if name == 'logger' else url, timeout=2)
+            status = "✅ Running" if response.status_code == 200 else f"⚠️ HTTP {response.status_code}"
+        except:
+            status = "❌ Down"
+        print(f"{name:15}: {status}")</code></pre>
+<p><strong>What It Does:</strong></p>
+<ol>
+    <li>Counts files in watched/, processed/, and logs/ directories</li>
+    <li>Displays file count for each directory</li>
+    <li>Checks status of all services</li>
+    <li>Formats output in a clean table format</li>
+</ol>
+<p><strong>Example Output:</strong></p>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px;">
+📊 SASA Software Statistics
+========================================
+Watched     : 1 files
+Processed   : 23 files
+Logs        : 45 files
+
+🔧 Service Status:
+logger         : ✅ Running
+watcher-config : ✅ Running
+logger-config  : ✅ Running</pre>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 154-174: cleanup() Method</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>def cleanup(self):
+    """Clean up system (remove processed files and logs)"""
+    print("🧹 Cleaning up SASA Software...")
+    
+    confirm = input("This will delete processed files and logs. Continue? (y/N): ")
+    if confirm.lower() != 'y':
+        print("Cleanup cancelled")
+        return
+    
+    # Clean directories
+    dirs_to_clean = ['processed', 'logs']
+    for dir_name in dirs_to_clean:
+        dir_path = Path(dir_name)
+        if dir_path.exists():
+            files = list(dir_path.glob('*'))
+            for file_path in files:
+                if file_path.is_file():
+                    file_path.unlink()
+            print(f"🗑️ Cleaned {len(files)} files from {dir_name}")
+    
+    print("✅ Cleanup completed")</code></pre>
+<p><strong>Safety Features:</strong></p>
+<ul>
+    <li><strong>Line 158:</strong> Requires user confirmation before deletion</li>
+    <li>Only cleans <code>processed/</code> and <code>logs/</code> directories</li>
+    <li>Does NOT touch the <code>watched/</code> directory</li>
+    <li>Reports number of files deleted from each directory</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 187-217: main() Function and Argument Parser</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>def main():
+    """Main entry point"""
+    parser = argparse.ArgumentParser(description='SASA Software Management Tool')
+    parser.add_argument('command', choices=[
+        'start', 'stop', 'restart', 'status', 'logs', 'stats', 'cleanup', 'test'
+    ], help='Command to execute')
+    
+    parser.add_argument('--service', help='Specific service for logs command')
+    parser.add_argument('--follow', '-f', action='store_true', help='Follow logs')
+    
+    args = parser.parse_args()
+    
+    manager = SASAManager()
+    
+    if args.command == 'start':
+        manager.start_services()
+    elif args.command == 'stop':
+        manager.stop_services()
+    elif args.command == 'restart':
+        manager.restart_services()
+    elif args.command == 'status':
+        manager.check_status()
+    elif args.command == 'logs':
+        manager.show_logs(args.service, args.follow)
+    elif args.command == 'stats':
+        manager.show_stats()
+    elif args.command == 'cleanup':
+        manager.cleanup()
+    elif args.command == 'test':
+        manager.test_system()
+
+if __name__ == "__main__":
+    main()</code></pre>
+<p><strong>Argument Parser Configuration:</strong></p>
+<ul>
+    <li><strong>Line 189:</strong> Creates argument parser with description</li>
+    <li><strong>Lines 190-192:</strong> Defines required command argument with 8 choices</li>
+    <li><strong>Line 194:</strong> Optional <code>--service</code> flag for logs command</li>
+    <li><strong>Line 195:</strong> Optional <code>--follow</code> flag for tailing logs</li>
+    <li><strong>Lines 201-216:</strong> Command dispatcher - routes to appropriate method</li>
+</ul>
+</div>
+
+<h4>💡 Usage Examples:</h4>
+<div style="background: #e8f4fd; padding: 20px; border-radius: 8px; border-left: 5px solid #0066cc; margin: 20px 0;">
+<h5>Start System:</h5>
+<pre>$ python manage.py start
+🚀 Starting SASA Software services...
+📁 Created directory: watched
+📁 Created directory: processed
+📁 Created directory: logs
+📁 Created directory: temp
+⏳ Waiting for services to start...
+🔍 Checking service status...
+✅ Logger Service: healthy
+✅ Watcher Config UI: Running
+✅ Logger Config UI: Running</pre>
+
+<h5>Check Status:</h5>
+<pre>$ python manage.py status
+🔍 Checking service status...
+✅ Logger Service: healthy
+   Processed files: 23
+   Uptime: 3600s
+✅ Watcher Config UI: Running
+✅ Logger Config UI: Running</pre>
+
+<h5>View Statistics:</h5>
+<pre>$ python manage.py stats
+📊 SASA Software Statistics
+========================================
+Watched     : 1 files
+Processed   : 23 files
+Logs        : 45 files
+
+🔧 Service Status:
+logger         : ✅ Running
+watcher-config : ✅ Running
+logger-config  : ✅ Running</pre>
+
+<h5>Follow Logs:</h5>
+<pre>$ python manage.py logs --follow
+# Shows real-time logs from all services</pre>
+</div>
+
+</div>
+
+<!-- HEBREW SECTION -->
+<div class="hebrew-section">
+<h4>🎯 מטרה:</h4>
+<p>כלי ניהול שורת פקודה מקיף המספק פקודות קלות לשימוש לשליטה, ניטור ותחזוקה של מערכת המיקרו-שירותים SASA Software.</p>
+
+<h4>📋 סקירת קובץ:</h4>
+<div style="background: #e8f4fd; padding: 15px; border-radius: 5px; border-right: 5px solid #0066cc;">
+<strong>שפה:</strong> Python 3<br>
+<strong>סך שורות:</strong> 219 שורות<br>
+<strong>מחלקה ראשית:</strong> SASAManager<br>
+<strong>פקודות זמינות:</strong> 8 פקודות<br>
+<strong>שימוש:</strong> <code>python manage.py [command]</code>
+</div>
+
+<h4>📚 פקודות זמינות:</h4>
+<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+    <thead style="background: #9b59b6; color: white;">
+        <tr>
+            <th style="padding: 12px; border: 1px solid #ddd;">פקודה</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">תיאור</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">דוגמה</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>start</code></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">הפעל את כל השירותים</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>python manage.py start</code></td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>stop</code></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">עצור את כל השירותים</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>python manage.py stop</code></td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>restart</code></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">הפעל מחדש את כל השירותים</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>python manage.py restart</code></td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>status</code></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">בדוק בריאות שירות</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>python manage.py status</code></td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>logs</code></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">צפה בלוגים של שירות</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>python manage.py logs -f</code></td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>stats</code></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">הצג סטטיסטיקות מערכת</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>python manage.py stats</code></td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>cleanup</code></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">נקה קבצים מעובדים</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>python manage.py cleanup</code></td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>test</code></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">הפעל בדיקות מערכת</td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><code>python manage.py test</code></td>
+        </tr>
+    </tbody>
+</table>
+
+<h4>🔍 תכונות עיקריות:</h4>
+<ul>
+    <li><strong>בדיקת Docker:</strong> מאמת התקנה לפני התחלה</li>
+    <li><strong>יצירת תיקיות:</strong> יוצר אוטומטית תיקיות נדרשות</li>
+    <li><strong>בדיקות בריאות:</strong> שאילתות HTTP לבדיקת סטטוס שירות</li>
+    <li><strong>סטטיסטיקות:</strong> ספירת קבצים והצגת מידע מערכת</li>
+    <li><strong>ניקוי בטוח:</strong> מחיקה מאושרת של קבצים</li>
+    <li><strong>ניהול לוגים:</strong> צפייה ומעקב אחר לוגים</li>
+    <li><strong>מימשק CLI:</strong> פקודות אינטואיטיביות עם עזרה</li>
+    <li><strong>טיפול בשגיאות:</strong> הודעות שגיאה ברורות</li>
+</ul>
+
+<h4>💡 דוגמאות שימוש:</h4>
+<div style="background: #e8f4fd; padding: 20px; border-radius: 8px; border-right: 5px solid #0066cc; margin: 20px 0;">
+<h5>הפעלת מערכת:</h5>
+<pre>$ python manage.py start
+🚀 Starting SASA Software services...
+📁 Created directory: watched
+📁 Created directory: processed
+📁 Created directory: logs
+📁 Created directory: temp
+⏳ Waiting for services to start...
+🔍 Checking service status...
+✅ Logger Service: healthy
+✅ Watcher Config UI: Running
+✅ Logger Config UI: Running</pre>
+
+<h5>בדיקת סטטוס:</h5>
+<pre>$ python manage.py status
+🔍 Checking service status...
+✅ Logger Service: healthy
+   Processed files: 23
+   Uptime: 3600s
+✅ Watcher Config UI: Running
+✅ Logger Config UI: Running</pre>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
 </body>
 </html>

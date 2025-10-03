@@ -1,0 +1,91 @@
+2025-09-30 20:27:23,381 - __main__ - INFO - Initializing Watcher Service
+2025-09-30 20:27:23,389 - __main__ - INFO - Watcher Service started successfully
+2025-09-30 20:32:43,566 - __main__ - ERROR - Failed to send metadata to logger service: HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /log (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001D231AC5FD0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-09-30 20:32:52,664 - __main__ - ERROR - Failed to send metadata to logger service: HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /log (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001D231ABDF90>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-09-30 20:33:01,771 - __main__ - ERROR - Failed to send metadata to logger service: HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /log (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001D231ABE0D0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-09-30 20:33:07,878 - __main__ - ERROR - Failed to send metadata to logger service: HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /log (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001D2319EBA80>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-09-30 20:33:16,977 - __main__ - ERROR - Failed to send metadata to logger service: HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /log (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001D23238C2B0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-09-30 20:33:26,084 - __main__ - ERROR - Failed to send metadata to logger service: HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /log (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001D231A8E7B0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-09-30 20:33:32,229 - __main__ - ERROR - Failed to send metadata to logger service: HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /log (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001D23237D040>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-09-30 20:33:41,332 - __main__ - ERROR - Failed to send metadata to logger service: HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /log (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001D23237D7B0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-09-30 20:33:50,429 - __main__ - ERROR - Failed to send metadata to logger service: HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /log (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001D23237D9D0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-09-30 20:33:56,551 - __main__ - ERROR - Failed to send metadata to logger service: HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /log (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001D23237DBF0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-09-30 20:34:05,652 - __main__ - ERROR - Failed to send metadata to logger service: HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /log (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001D23237DE10>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-09-30 20:34:14,787 - __main__ - ERROR - Failed to send metadata to logger service: HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /log (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001D23237E030>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-09-30 20:34:20,842 - __main__ - ERROR - Failed to send metadata to logger service: HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /log (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001D23237E250>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-09-30 20:34:29,937 - __main__ - ERROR - Failed to send metadata to logger service: HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /log (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001D23237E470>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-09-30 20:34:39,053 - __main__ - ERROR - Failed to send metadata to logger service: HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /log (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001D2319AFDF0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-09-30 20:34:45,166 - __main__ - ERROR - Failed to send metadata to logger service: HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /log (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001D2319AFF00>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-09-30 20:34:54,280 - __main__ - ERROR - Failed to send metadata to logger service: HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /log (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001D2319AF570>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-09-30 20:35:03,373 - __main__ - ERROR - Failed to send metadata to logger service: HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /log (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001D2319AFBD0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-09-30 20:35:09,463 - __main__ - ERROR - Failed to send metadata to logger service: HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /log (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001D23237E470>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-09-30 20:35:18,593 - __main__ - ERROR - Failed to send metadata to logger service: HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /log (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001D23237E250>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-09-30 20:35:27,687 - __main__ - ERROR - Failed to send metadata to logger service: HTTPConnectionPool(host='localhost', port=8001): Max retries exceeded with url: /log (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001D23237E030>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-09-30 20:35:37,910 - __main__ - INFO - Received shutdown signal
+2025-09-30 20:35:37,910 - __main__ - INFO - Stopping Watcher Service
+2025-09-30 20:35:37,910 - __main__ - INFO - Watcher Service stopped
+2025-09-30 20:36:25,518 - __main__ - INFO - Initializing Watcher Service
+2025-09-30 20:36:25,522 - __main__ - INFO - Watcher Service started successfully
+2025-09-30 20:39:28,675 - __main__ - INFO - Initializing Watcher Service
+2025-09-30 20:39:28,676 - __main__ - INFO - Starting to watch directory: C:\Users\haspe\OneDrive\Desktop\מהמחשב הישן\VScode\sasa_Software\watched
+2025-09-30 20:39:28,678 - __main__ - INFO - Watcher Service started successfully
+2025-09-30 20:39:37,470 - __main__ - INFO - Added C:\Users\haspe\OneDrive\Desktop\מהמחשב הישן\VScode\sasa_Software\watched\test_communication.txt to processing queue
+2025-09-30 20:39:38,680 - __main__ - INFO - Processing file: C:\Users\haspe\OneDrive\Desktop\מהמחשב הישן\VScode\sasa_Software\watched\test_communication.txt
+2025-09-30 20:39:39,612 - __main__ - INFO - Successfully sent metadata for test_communication.txt
+2025-09-30 20:39:39,613 - __main__ - INFO - Moved test_communication.txt to processed directory: ./processed\test_communication.txt
+2025-09-30 20:39:40,742 - __main__ - INFO - Successfully sent metadata for test_communication.txt
+2025-09-30 20:39:40,743 - __main__ - ERROR - Failed to move file C:\Users\haspe\OneDrive\Desktop\מהמחשב הישן\VScode\sasa_Software\watched\test_communication.txt: [WinError 2] The system cannot find the file specified
+2025-09-30 20:40:05,528 - __main__ - INFO - Added C:\Users\haspe\OneDrive\Desktop\מהמחשב הישן\VScode\sasa_Software\watched\second_test.txt to processing queue
+2025-09-30 20:40:06,748 - __main__ - INFO - Processing file: C:\Users\haspe\OneDrive\Desktop\מהמחשב הישן\VScode\sasa_Software\watched\second_test.txt
+2025-09-30 20:40:07,681 - __main__ - INFO - Successfully sent metadata for second_test.txt
+2025-09-30 20:40:07,682 - __main__ - INFO - Moved second_test.txt to processed directory: ./processed\second_test.txt
+2025-09-30 20:40:08,829 - __main__ - INFO - Successfully sent metadata for second_test.txt
+2025-09-30 20:40:08,830 - __main__ - ERROR - Failed to move file C:\Users\haspe\OneDrive\Desktop\מהמחשב הישן\VScode\sasa_Software\watched\second_test.txt: [WinError 2] The system cannot find the file specified
+2025-09-30 20:53:34,071 - __main__ - INFO - Added C:\Users\haspe\OneDrive\Desktop\מהמחשב הישן\VScode\sasa_Software\watched\ss.txt to processing queue
+2025-09-30 20:53:34,970 - __main__ - INFO - Processing file: C:\Users\haspe\OneDrive\Desktop\מהמחשב הישן\VScode\sasa_Software\watched\ss.txt
+2025-09-30 20:53:37,020 - __main__ - INFO - Successfully sent metadata for ss.txt
+2025-09-30 20:53:37,021 - __main__ - INFO - Moved ss.txt to processed directory: ./processed\ss.txt
+2025-09-30 20:53:37,874 - __main__ - INFO - Successfully sent metadata for ss.txt
+2025-09-30 20:53:46,867 - __main__ - INFO - Added C:\Users\haspe\OneDrive\Desktop\מהמחשב הישן\VScode\sasa_Software\watched\ss.txt to processing queue
+2025-09-30 20:53:47,023 - __main__ - INFO - Processing file: C:\Users\haspe\OneDrive\Desktop\מהמחשב הישן\VScode\sasa_Software\watched\ss.txt
+2025-09-30 20:53:49,085 - __main__ - INFO - Successfully sent metadata for ss.txt
+2025-09-30 20:53:49,088 - __main__ - INFO - Moved ss.txt to processed directory: ./processed\ss_1.txt
+2025-09-30 20:53:49,943 - __main__ - INFO - Successfully sent metadata for ss.txt
+2025-09-30 20:55:15,739 - __main__ - INFO - Added C:\Users\haspe\OneDrive\Desktop\מהמחשב הישן\VScode\sasa_Software\watched\aa.txt to processing queue
+2025-09-30 20:55:17,103 - __main__ - INFO - Processing file: C:\Users\haspe\OneDrive\Desktop\מהמחשב הישן\VScode\sasa_Software\watched\aa.txt
+2025-09-30 20:55:18,033 - __main__ - INFO - Successfully sent metadata for aa.txt
+2025-09-30 20:55:18,034 - __main__ - INFO - Moved aa.txt to processed directory: ./processed\aa.txt
+2025-09-30 20:55:18,405 - __main__ - INFO - Added C:\Users\haspe\OneDrive\Desktop\מהמחשב הישן\VScode\sasa_Software\watched\aa.txt to processing queue
+2025-09-30 20:55:19,155 - __main__ - INFO - Successfully sent metadata for aa.txt
+2025-09-30 20:55:19,157 - __main__ - INFO - Moved aa.txt to processed directory: ./processed\aa_1.txt
+2025-09-30 20:56:48,101 - __main__ - INFO - Added C:\Users\haspe\OneDrive\Desktop\מהמחשב הישן\VScode\sasa_Software\watched\malice.bash to processing queue
+2025-09-30 20:56:49,172 - __main__ - INFO - Processing file: C:\Users\haspe\OneDrive\Desktop\מהמחשב הישן\VScode\sasa_Software\watched\malice.bash
+2025-09-30 20:56:51,261 - __main__ - INFO - Successfully sent metadata for malice.bash
+2025-09-30 20:56:51,262 - __main__ - INFO - Moved malice.bash to processed directory: ./processed\malice.bash
+2025-09-30 20:56:52,119 - __main__ - INFO - Successfully sent metadata for malice.bash
+2025-10-01 01:43:24,003 - __main__ - INFO - Received shutdown signal
+2025-10-01 01:43:24,004 - __main__ - INFO - Stopping Watcher Service
+2025-10-01 01:43:24,007 - __main__ - INFO - Watcher Service stopped
+2025-10-01 01:43:32,668 - __main__ - INFO - Received shutdown signal
+2025-10-01 01:43:32,670 - __main__ - INFO - Stopping Watcher Service
+2025-10-01 01:43:32,673 - __main__ - INFO - Watcher Service stopped
+2025-10-03 15:49:20,666 - __main__ - INFO - Initializing Watcher Service
+2025-10-03 15:49:20,668 - __main__ - INFO - Starting to watch directory: C:\Users\haspe\OneDrive\Desktop\מהמחשב הישן\VScode\sasa_Software\watched
+2025-10-03 15:49:20,669 - __main__ - INFO - Watcher Service started successfully
+2025-10-03 15:51:36,302 - __main__ - INFO - Added C:\Users\haspe\OneDrive\Desktop\מהמחשב הישן\VScode\sasa_Software\watched\sasa_test_file.txt to processing queue
+2025-10-03 15:51:36,694 - __main__ - INFO - Processing file: C:\Users\haspe\OneDrive\Desktop\מהמחשב הישן\VScode\sasa_Software\watched\sasa_test_file.txt
+2025-10-03 15:51:38,760 - __main__ - INFO - Successfully sent metadata for sasa_test_file.txt
+2025-10-03 15:51:38,761 - __main__ - INFO - Moved sasa_test_file.txt to processed directory: ./processed\sasa_test_file.txt
+2025-10-03 15:52:27,687 - __main__ - INFO - Added C:\Users\haspe\OneDrive\Desktop\מהמחשב הישן\VScode\sasa_Software\watched\a.a to processing queue
+2025-10-03 15:52:28,770 - __main__ - INFO - Processing file: C:\Users\haspe\OneDrive\Desktop\מהמחשב הישן\VScode\sasa_Software\watched\a.a
+2025-10-03 15:52:30,826 - __main__ - INFO - Successfully sent metadata for a.a
+2025-10-03 15:52:30,827 - __main__ - INFO - Moved a.a to processed directory: ./processed\a.a
+2025-10-03 17:47:13,191 - __main__ - INFO - Received shutdown signal
+2025-10-03 17:47:13,192 - __main__ - INFO - Stopping Watcher Service
+2025-10-03 17:47:13,193 - __main__ - INFO - Watcher Service stopped
+2025-10-03 17:47:17,521 - __main__ - INFO - Initializing Watcher Service
+2025-10-03 17:47:17,522 - __main__ - INFO - Starting to watch directory: C:\Users\haspe\OneDrive\Desktop\מהמחשב הישן\VScode\sasa_Software\watched
+2025-10-03 17:47:17,523 - __main__ - INFO - Watcher Service started successfully
+2025-10-03 18:05:01,421 - __main__ - INFO - Received shutdown signal
+2025-10-03 18:05:01,422 - __main__ - INFO - Stopping Watcher Service
+2025-10-03 18:05:01,423 - __main__ - INFO - Watcher Service stopped

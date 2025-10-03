@@ -1,0 +1,63 @@
+# Watcher Service Configuration
+service_name: "watcher-service"
+
+# JWT Configuration
+jwt:
+  secret: "sasa-Software2015" # Can be overridden by JWT_SECRET environment variable
+  issuer: "watcher-service"
+  expiry_minutes: 5
+
+# Directory Configuration
+directories:
+  watched: "./watched"
+  processed: "./processed"
+  temp: "./temp"
+
+# File Processing Configuration
+processing:
+  max_files_to_process: 100 # Maximum number of files to process in one batch
+  file_size_limit_mb: 500 # Maximum file size to process (in MB)
+  supported_extensions: [] # Empty means all extensions are supported
+  exclude_patterns: ["*.tmp", "*.lock", ".DS_Store"]
+
+# Logger Service Configuration
+logger_service:
+  url: "http://localhost:8001"
+  endpoint: "/log"
+  timeout_seconds: 30
+  retry_attempts: 3
+  retry_delay_seconds: 5
+
+# Monitoring Configuration
+monitoring:
+  poll_interval_seconds: 2
+  batch_processing: true
+  move_processed_files: true
+
+# Logging Configuration
+logging:
+  level: "INFO" # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  file: "./logs/watcher-service.log"
+  max_size_mb: 100
+  backup_count: 5
+
+# Notification Configuration
+notifications:
+  email:
+    enabled: false
+    smtp_server: "smtp.gmail.com"
+    smtp_port: 587
+    smtp_user: "" # Can be overridden by SMTP_USER environment variable
+    smtp_password: "" # Can be overridden by SMTP_PASSWORD environment variable
+    use_tls: true
+    recipients: []
+
+  syslog:
+    enabled: false
+    facility: "LOG_USER" # LOG_USER, LOG_LOCAL0, etc.
+
+# Health Check Configuration
+health_check:
+  enabled: true
+  port: 8000
+  endpoint: "/health"

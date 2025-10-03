@@ -1,0 +1,106 @@
+version: '3.8'
+
+services:
+  logger-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.logger
+    container_name: sasa-logger-service
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./logs:/app/logs
+      - ./logger-service/config.yaml:/app/logger-service/config.yaml
+    environment:
+      - JWT_SECRET=${JWT_SECRET:-sasa-Software2015}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+    networks:
+      - sasa-network
+    restart: unless-stopped
+    labels:
+      - "com.sasa-software.service=logger"
+      - "com.sasa-software.version=1.0.0"
+
+  watcher-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.watcher
+    container_name: sasa-watcher-service
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./watched:/app/watched
+      - ./processed:/app/processed
+      - ./logs:/app/logs
+      - ./watcher-service/config.yaml:/app/watcher-service/config.yaml
+    environment:
+      - JWT_SECRET=${JWT_SECRET:-sasa-Software2015}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+    networks:
+      - sasa-network
+    depends_on:
+      - logger-service
+    restart: unless-stopped
+    labels:
+      - "com.sasa-software.service=watcher"
+      - "com.sasa-software.version=1.0.0"
+
+  watcher-config-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.watcher
+    container_name: sasa-watcher-config-ui
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./watcher-service/config.yaml:/app/watcher-service/config.yaml
+    environment:
+      - JWT_SECRET=${JWT_SECRET:-sasa-Software2015}
+    networks:
+      - sasa-network
+    command: ["python", "watcher-service/config_ui.py"]
+    restart: unless-stopped
+    labels:
+      - "com.sasa-software.service=watcher-config-ui"
+      - "com.sasa-software.version=1.0.0"
+
+  logger-config-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.logger
+    container_name: sasa-logger-config-ui
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./logger-service/config.yaml:/app/logger-service/config.yaml
+    environment:
+      - JWT_SECRET=${JWT_SECRET:-sasa-Software2015}
+    networks:
+      - sasa-network
+    command: ["python", "logger-service/config_ui.py"]
+    restart: unless-stopped
+    labels:
+      - "com.sasa-software.service=logger-config-ui"
+      - "com.sasa-software.version=1.0.0"
+
+networks:
+  sasa-network:
+    driver: bridge
+    labels:
+      - "com.sasa-software.network=main"
+
+volumes:
+  logs:
+    driver: local
+    labels:
+      - "com.sasa-software.volume=logs"
+  watched:
+    driver: local
+    labels:
+      - "com.sasa-software.volume=watched"
+  processed:
+    driver: local
+    labels:
+      - "com.sasa-software.volume=processed"

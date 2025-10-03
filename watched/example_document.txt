@@ -1,0 +1,11 @@
+This is a sample document for testing the SASA Software microservices system.
+
+The system will:
+1. Detect this file in the watched directory
+2. Extract metadata (filename, size, timestamp, hash)
+3. Send the metadata to the logger service via JWT-authenticated HTTP
+4. Create a log file with the metadata
+5. Move this file to the processed directory
+
+File created at: 2025-09-30T14:33:22Z
+System: SASA Software v1.0.0

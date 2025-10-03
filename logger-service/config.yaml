@@ -1,0 +1,60 @@
+health_check:
+  detailed_info: true
+  enabled: true
+  endpoint: /health
+jwt:
+  algorithm: HS256
+  expected_issuer: watcher-service
+  secret: sasa-Software2015
+logging:
+  backup_count: 5
+  file: ./logs/logger-service.log
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  level: INFO
+  max_size_mb: 100
+notifications:
+  email:
+    enabled: false
+    recipients: []
+    smtp_password: ""
+    smtp_port: 587
+    smtp_server: smtp.gmail.com
+    smtp_user: ""
+    use_tls: true
+  syslog:
+    enabled: false
+    facility: LOG_USER
+processing:
+  content_template:
+    "Filename: {filename}\r\nSize: {file_size_formatted}\r\nCreated\
+    \ At: {created_at}\r\nHash: {hash}\r\nProcessed At: {processed_at}\r\n"
+  sanitize_filenames: true
+  timestamp_format: "%Y%m%dT%H%M%SZ"
+rate_limiting:
+  burst_size: 10
+  enabled: true
+  requests_per_minute: 100
+security:
+  allowed_origins:
+    - "*"
+  cors_enabled: false
+  request_size_limit_mb: 10
+server:
+  host: 0.0.0.0
+  port: 8001
+  workers: 1
+service_name: logger-service
+storage:
+  compress_old_logs: true
+  file_retention_days: 30
+  logs_directory: ./logs
+  max_log_files: 1000
+validation:
+  max_file_size_mb: 1000
+  max_filename_length: 255
+  optional_fields:
+    - hash
+  required_fields:
+    - filename
+    - created_at
+    - file_size

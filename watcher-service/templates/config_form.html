@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watcher Service Configuration</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            background: #fafafa;
+        }
+        
+        .form-section h2 {
+            color: #007bff;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .form-group {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .required {
+            color: #dc3545;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        input[type="email"],
+        input[type="password"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        
+        input[type="checkbox"] {
+            transform: scale(1.2);
+            margin-right: 8px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .button-group {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 0 10px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        .reset-btn {
+            background-color: #6c757d;
+        }
+        
+        .reset-btn:hover {
+            background-color: #545b62;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .help-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .collapsible {
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .collapsible:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+    <script>
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            const isHidden = section.style.display === 'none';
+            section.style.display = isHidden ? 'block' : 'none';
+        }
+        
+        function resetForm() {
+            if (confirm('Are you sure you want to reset all values to default?')) {
+                document.getElementById('configForm').reset();
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Watcher Service Configuration</h1>
+        
+        {% if success_message %}
+        <div class="success">
+            ✅ {{ success_message }}
+        </div>
+        {% endif %}
+        
+        {% if error_message %}
+        <div class="error">
+            ❌ {{ error_message }}
+        </div>
+        {% endif %}
+        
+        <form id="configForm" method="post" action="/save">
+            <!-- Service Configuration -->
+            <div class="form-section">
+                <h2>🛠️ Service Configuration</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="service_name">Service Name <span class="required">*</span></label>
+                        <input type="text" id="service_name" name="service_name" 
+                               value="{{ config.get('service_name', 'watcher-service') }}" required>
+                        <div class="help-text">Unique identifier for this service instance</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- JWT Configuration -->
+            <div class="form-section">
+                <h2>🔐 JWT Authentication</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="jwt_secret">JWT Secret <span class="required">*</span></label>
+                        <input type="password" id="jwt_secret" name="jwt_secret" 
+                               value="{{ config.get('jwt', {}).get('secret', 'sasa-Software2015') }}" required>
+                        <div class="help-text">Shared secret for JWT token signing (keep secure!)</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="jwt_issuer">JWT Issuer <span class="required">*</span></label>
+                        <input type="text" id="jwt_issuer" name="jwt_issuer" 
+                               value="{{ config.get('jwt', {}).get('issuer', 'watcher-service') }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="jwt_expiry_minutes">Token Expiry (minutes) <span class="required">*</span></label>
+                        <input type="number" id="jwt_expiry_minutes" name="jwt_expiry_minutes" 
+                               value="{{ config.get('jwt', {}).get('expiry_minutes', 5) }}" min="1" max="60" required>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Directory Configuration -->
+            <div class="form-section">
+                <h2>📁 Directory Configuration</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="watched_dir">Watched Directory <span class="required">*</span></label>
+                        <input type="text" id="watched_dir" name="watched_dir" 
+                               value="{{ config.get('directories', {}).get('watched', './watched') }}" required>
+                        <div class="help-text">Directory to monitor for new files</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="processed_dir">Processed Directory <span class="required">*</span></label>
+                        <input type="text" id="processed_dir" name="processed_dir" 
+                               value="{{ config.get('directories', {}).get('processed', './processed') }}" required>
+                        <div class="help-text">Directory to move successfully processed files</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="temp_dir">Temporary Directory</label>
+                        <input type="text" id="temp_dir" name="temp_dir" 
+                               value="{{ config.get('directories', {}).get('temp', './temp') }}">
+                        <div class="help-text">Temporary working directory</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Processing Configuration -->
+            <div class="form-section">
+                <h2>⚙️ Processing Configuration</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="max_files_to_process">Max Files per Batch <span class="required">*</span></label>
+                        <input type="number" id="max_files_to_process" name="max_files_to_process" 
+                               value="{{ config.get('processing', {}).get('max_files_to_process', 100) }}" min="1" required>
+                        <div class="help-text">Maximum number of files to process in one batch</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="file_size_limit_mb">File Size Limit (MB) <span class="required">*</span></label>
+                        <input type="number" id="file_size_limit_mb" name="file_size_limit_mb" 
+                               value="{{ config.get('processing', {}).get('file_size_limit_mb', 500) }}" min="1" required>
+                        <div class="help-text">Maximum file size to process</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Logger Service Configuration -->
+            <div class="form-section">
+                <h2>📊 Logger Service Configuration</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="logger_service_url">Logger Service URL <span class="required">*</span></label>
+                        <input type="text" id="logger_service_url" name="logger_service_url" 
+                               value="{{ config.get('logger_service', {}).get('url', 'http://localhost:8001') }}" required>
+                        <div class="help-text">Base URL of the logger service</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="logger_service_endpoint">Logger Endpoint <span class="required">*</span></label>
+                        <input type="text" id="logger_service_endpoint" name="logger_service_endpoint" 
+                               value="{{ config.get('logger_service', {}).get('endpoint', '/log') }}" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="timeout_seconds">Request Timeout (seconds) <span class="required">*</span></label>
+                        <input type="number" id="timeout_seconds" name="timeout_seconds" 
+                               value="{{ config.get('logger_service', {}).get('timeout_seconds', 30) }}" min="5" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="retry_attempts">Retry Attempts <span class="required">*</span></label>
+                        <input type="number" id="retry_attempts" name="retry_attempts" 
+                               value="{{ config.get('logger_service', {}).get('retry_attempts', 3) }}" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="retry_delay_seconds">Retry Delay (seconds) <span class="required">*</span></label>
+                        <input type="number" id="retry_delay_seconds" name="retry_delay_seconds" 
+                               value="{{ config.get('logger_service', {}).get('retry_delay_seconds', 5) }}" min="1" required>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Monitoring Configuration -->
+            <div class="form-section">
+                <h2>👁️ Monitoring Configuration</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="poll_interval_seconds">Poll Interval (seconds) <span class="required">*</span></label>
+                        <input type="number" id="poll_interval_seconds" name="poll_interval_seconds" 
+                               value="{{ config.get('monitoring', {}).get('poll_interval_seconds', 2) }}" min="1" required>
+                        <div class="help-text">How often to check for new files</div>
+                    </div>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="batch_processing" name="batch_processing" 
+                           {% if config.get('monitoring', {}).get('batch_processing', True) %}checked{% endif %}>
+                    <label for="batch_processing">Enable Batch Processing</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="move_processed_files" name="move_processed_files" 
+                           {% if config.get('monitoring', {}).get('move_processed_files', True) %}checked{% endif %}>
+                    <label for="move_processed_files">Move Processed Files</label>
+                </div>
+            </div>
+            
+            <!-- Logging Configuration -->
+            <div class="form-section">
+                <h2>📝 Logging Configuration</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="log_level">Log Level <span class="required">*</span></label>
+                        <select id="log_level" name="log_level" required>
+                            <option value="DEBUG" {% if config.get('logging', {}).get('level') == 'DEBUG' %}selected{% endif %}>DEBUG</option>
+                            <option value="INFO" {% if config.get('logging', {}).get('level', 'INFO') == 'INFO' %}selected{% endif %}>INFO</option>
+                            <option value="WARNING" {% if config.get('logging', {}).get('level') == 'WARNING' %}selected{% endif %}>WARNING</option>
+                            <option value="ERROR" {% if config.get('logging', {}).get('level') == 'ERROR' %}selected{% endif %}>ERROR</option>
+                            <option value="CRITICAL" {% if config.get('logging', {}).get('level') == 'CRITICAL' %}selected{% endif %}>CRITICAL</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="log_file">Log File Path <span class="required">*</span></label>
+                        <input type="text" id="log_file" name="log_file" 
+                               value="{{ config.get('logging', {}).get('file', './logs/watcher-service.log') }}" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="max_size_mb">Max Log Size (MB) <span class="required">*</span></label>
+                        <input type="number" id="max_size_mb" name="max_size_mb" 
+                               value="{{ config.get('logging', {}).get('max_size_mb', 100) }}" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="backup_count">Backup Count <span class="required">*</span></label>
+                        <input type="number" id="backup_count" name="backup_count" 
+                               value="{{ config.get('logging', {}).get('backup_count', 5) }}" min="1" required>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Email Notifications -->
+            <div class="form-section">
+                <h2>📧 Email Notifications</h2>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="email_enabled" name="email_enabled" 
+                           {% if config.get('notifications', {}).get('email', {}).get('enabled', False) %}checked{% endif %}>
+                    <label for="email_enabled">Enable Email Notifications</label>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="smtp_server">SMTP Server</label>
+                        <input type="text" id="smtp_server" name="smtp_server" 
+                               value="{{ config.get('notifications', {}).get('email', {}).get('smtp_server', 'smtp.gmail.com') }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="smtp_port">SMTP Port</label>
+                        <input type="number" id="smtp_port" name="smtp_port" 
+                               value="{{ config.get('notifications', {}).get('email', {}).get('smtp_port', 587) }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="smtp_user">SMTP Username</label>
+                        <input type="email" id="smtp_user" name="smtp_user" 
+                               value="{{ config.get('notifications', {}).get('email', {}).get('smtp_user', '') }}">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="recipients">Recipients (comma-separated)</label>
+                        <textarea id="recipients" name="recipients" rows="3">{{ config.get('notifications', {}).get('email', {}).get('recipients', [])|join(', ') }}</textarea>
+                        <div class="help-text">Enter email addresses separated by commas</div>
+                    </div>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="use_tls" name="use_tls" 
+                           {% if config.get('notifications', {}).get('email', {}).get('use_tls', True) %}checked{% endif %}>
+                    <label for="use_tls">Use TLS</label>
+                </div>
+            </div>
+            
+            <!-- Syslog Notifications -->
+            <div class="form-section">
+                <h2>📋 Syslog Notifications</h2>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="syslog_enabled" name="syslog_enabled" 
+                           {% if config.get('notifications', {}).get('syslog', {}).get('enabled', False) %}checked{% endif %}>
+                    <label for="syslog_enabled">Enable Syslog Notifications</label>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="syslog_facility">Syslog Facility</label>
+                        <select id="syslog_facility" name="syslog_facility">
+                            <option value="LOG_USER" {% if config.get('notifications', {}).get('syslog', {}).get('facility', 'LOG_USER') == 'LOG_USER' %}selected{% endif %}>LOG_USER</option>
+                            <option value="LOG_LOCAL0" {% if config.get('notifications', {}).get('syslog', {}).get('facility') == 'LOG_LOCAL0' %}selected{% endif %}>LOG_LOCAL0</option>
+                            <option value="LOG_LOCAL1" {% if config.get('notifications', {}).get('syslog', {}).get('facility') == 'LOG_LOCAL1' %}selected{% endif %}>LOG_LOCAL1</option>
+                            <option value="LOG_LOCAL2" {% if config.get('notifications', {}).get('syslog', {}).get('facility') == 'LOG_LOCAL2' %}selected{% endif %}>LOG_LOCAL2</option>
+                            <option value="LOG_LOCAL3" {% if config.get('notifications', {}).get('syslog', {}).get('facility') == 'LOG_LOCAL3' %}selected{% endif %}>LOG_LOCAL3</option>
+                            <option value="LOG_LOCAL4" {% if config.get('notifications', {}).get('syslog', {}).get('facility') == 'LOG_LOCAL4' %}selected{% endif %}>LOG_LOCAL4</option>
+                            <option value="LOG_LOCAL5" {% if config.get('notifications', {}).get('syslog', {}).get('facility') == 'LOG_LOCAL5' %}selected{% endif %}>LOG_LOCAL5</option>
+                            <option value="LOG_LOCAL6" {% if config.get('notifications', {}).get('syslog', {}).get('facility') == 'LOG_LOCAL6' %}selected{% endif %}>LOG_LOCAL6</option>
+                            <option value="LOG_LOCAL7" {% if config.get('notifications', {}).get('syslog', {}).get('facility') == 'LOG_LOCAL7' %}selected{% endif %}>LOG_LOCAL7</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Health Check Configuration -->
+            <div class="form-section">
+                <h2>❤️ Health Check Configuration</h2>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="health_check_enabled" name="health_check_enabled" 
+                           {% if config.get('health_check', {}).get('enabled', True) %}checked{% endif %}>
+                    <label for="health_check_enabled">Enable Health Check Endpoint</label>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="health_check_port">Health Check Port</label>
+                        <input type="number" id="health_check_port" name="health_check_port" 
+                               value="{{ config.get('health_check', {}).get('port', 8000) }}" min="1" max="65535">
+                        <div class="help-text">Port for health check endpoint</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Submit Buttons -->
+            <div class="button-group">
+                <button type="submit">💾 Save Configuration</button>
+                <button type="button" class="reset-btn" onclick="resetForm()">🔄 Reset to Defaults</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

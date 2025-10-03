@@ -1965,5 +1965,797 @@ Processed At: 2025-10-03T12:34:58Z</pre>
 
 </div>
 
+<!-- SECTION 3: PROJECT STRUCTURE DEEP DIVE -->
+<div class="page-break">
+<h1 style="text-align: center; border-bottom: 3px solid #9b59b6; padding-bottom: 20px; color: #2c3e50;">
+    📁 SECTION 3: PROJECT STRUCTURE DEEP DIVE<br>
+    קטע 3: ניתוח מעמיק של מבנה הפרויקט
+</h1>
+
+<div class="bilingual-container">
+
+<!-- ENGLISH SECTION -->
+<div class="english-section">
+<h2>📊 3.0 Project Structure Overview</h2>
+
+<p>The SASA Software project follows a clean, organized microservices architecture. This section provides a comprehensive, line-by-line analysis of every file and directory in the project.</p>
+
+<h3>📂 Complete Directory Tree:</h3>
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; font-family: 'Courier New', monospace; font-size: 12px;">
+<pre>
+sasa_Software/
+├── 📄 docker-compose.yml          # Docker orchestration configuration
+├── 📄 requirements.txt            # Python dependencies
+├── 📄 manage.py                   # System management script
+├── 📄 run_services.py             # Alternative service runner
+├── 📄 test_system.py              # System integration tests
+├── 📄 validate_system.py          # System validation tool
+├── 📄 .env.example                # Environment variables template
+├── 
+├── 🚀 start.sh                    # Linux/Mac startup script
+├── 🚀 start.bat                   # Windows startup script
+├── 🚀 start.ps1                   # PowerShell startup script
+├── 🚀 start_windows.bat           # Alternative Windows script
+│
+├── 📁 shared/                     # Shared utilities and libraries
+│   ├── jwt_manager.py            # JWT token management
+│   └── utils.py                  # Common utility functions
+│
+├── 📁 watcher-service/           # File monitoring microservice
+│   ├── watcher.py                # Main watcher service
+│   ├── config_ui.py              # Configuration web interface
+│   ├── config.yaml               # Service configuration
+│   └── templates/
+│       └── config_form.html      # UI template
+│
+├── 📁 logger-service/            # Logging microservice
+│   ├── logger.py                 # Main logger service
+│   ├── config_ui.py              # Configuration web interface
+│   ├── config.yaml               # Service configuration
+│   └── templates/
+│       └── config_form.html      # UI template
+│
+├── 📁 watched/                   # Directory monitored for new files
+├── 📁 processed/                 # Successfully processed files
+├── 📁 logs/                      # Log files and service logs
+└── 📁 temp/                      # Temporary files (created at runtime)
+</pre>
+</div>
+
+<h3>🎯 Directory Purpose Summary:</h3>
+<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+    <thead style="background: #9b59b6; color: white;">
+        <tr>
+            <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Directory/File</th>
+            <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Type</th>
+            <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Purpose</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>docker-compose.yml</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Config</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Defines all services, networks, and volumes</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>requirements.txt</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Config</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Python package dependencies</td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>manage.py</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Script</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Management CLI for system operations</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>shared/</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Module</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Common code used by both services</td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>watcher-service/</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Service</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">File monitoring microservice</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>logger-service/</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Service</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Logging microservice</td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>watched/</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Data</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Input directory for new files</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>processed/</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Data</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Archive for processed files</td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>logs/</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Data</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">System and file logs</td>
+        </tr>
+    </tbody>
+</table>
+
+</div>
+
+<!-- HEBREW SECTION -->
+<div class="hebrew-section">
+<h2>📊 3.0 סקירת מבנה הפרויקט</h2>
+
+<p>פרויקט SASA Software עוקב אחר ארכיטקטורת מיקרו-שירותים נקייה ומאורגנת. חלק זה מספק ניתוח מקיף, שורה אחר שורה, של כל קובץ ותיקייה בפרויקט.</p>
+
+<h3>📂 עץ תיקיות מלא:</h3>
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; font-family: 'Courier New', monospace; font-size: 12px;">
+<pre>
+sasa_Software/
+├── 📄 docker-compose.yml          # הגדרת תזמור Docker
+├── 📄 requirements.txt            # תלויות Python
+├── 📄 manage.py                   # סקריפט ניהול מערכת
+├── 📄 run_services.py             # מריץ שירותים חלופי
+├── 📄 test_system.py              # בדיקות אינטגרציה של מערכת
+├── 📄 validate_system.py          # כלי אימות מערכת
+├── 📄 .env.example                # תבנית משתני סביבה
+├── 
+├── 🚀 start.sh                    # סקריפט הפעלה Linux/Mac
+├── 🚀 start.bat                   # סקריפט הפעלה Windows
+├── 🚀 start.ps1                   # סקריפט הפעלה PowerShell
+├── 🚀 start_windows.bat           # סקריפט Windows חלופי
+│
+├── 📁 shared/                     # כלי עזר וספריות משותפות
+│   ├── jwt_manager.py            # ניהול אסימוני JWT
+│   └── utils.py                  # פונקציות עזר משותפות
+│
+├── 📁 watcher-service/           # מיקרו-שירות ניטור קבצים
+│   ├── watcher.py                # שירות צפייה ראשי
+│   ├── config_ui.py              # ממשק ווב להגדרות
+│   ├── config.yaml               # הגדרות שירות
+│   └── templates/
+│       └── config_form.html      # תבנית ממשק משתמש
+│
+├── 📁 logger-service/            # מיקרו-שירות רישום
+│   ├── logger.py                 # שירות רישום ראשי
+│   ├── config_ui.py              # ממשק ווב להגדרות
+│   ├── config.yaml               # הגדרות שירות
+│   └── templates/
+│       └── config_form.html      # תבנית ממשק משתמש
+│
+├── 📁 watched/                   # תיקייה הנצפית לקבצים חדשים
+├── 📁 processed/                 # קבצים שעובדו בהצלחה
+├── 📁 logs/                      # קבצי לוג ולוגי שירותים
+└── 📁 temp/                      # קבצים זמניים (נוצר בזמן ריצה)
+</pre>
+</div>
+
+<h3>🎯 סיכום מטרות תיקיות:</h3>
+<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+    <thead style="background: #9b59b6; color: white;">
+        <tr>
+            <th style="padding: 12px; border: 1px solid #ddd; text-align: right;">תיקייה/קובץ</th>
+            <th style="padding: 12px; border: 1px solid #ddd; text-align: right;">סוג</th>
+            <th style="padding: 12px; border: 1px solid #ddd; text-align: right;">מטרה</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>docker-compose.yml</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">הגדרות</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">מגדיר את כל השירותים, רשתות ונפחים</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>requirements.txt</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">הגדרות</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">תלויות חבילות Python</td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>manage.py</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">סקריפט</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">CLI ניהול לפעולות מערכת</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>shared/</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">מודול</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">קוד משותף המשמש את שני השירותים</td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>watcher-service/</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">שירות</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">מיקרו-שירות ניטור קבצים</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>logger-service/</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">שירות</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">מיקרו-שירות רישום</td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>watched/</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">נתונים</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">תיקיית קלט לקבצים חדשים</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>processed/</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">נתונים</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">ארכיון לקבצים מעובדים</td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>logs/</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">נתונים</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">לוגים של מערכת וקבצים</td>
+        </tr>
+    </tbody>
+</table>
+
+</div>
+
+</div>
+
+<!-- SUBSECTION 3.1: ROOT DIRECTORY FILES -->
+<div class="page-break">
+<h2 style="text-align: center; border-bottom: 2px solid #9b59b6; padding-bottom: 15px;">
+    3.1 Root Directory Files Analysis<br>
+    ניתוח קבצי תיקיית השורש
+</h2>
+
+<div class="bilingual-container">
+
+<!-- ENGLISH SECTION -->
+<div class="english-section">
+<h3>📄 3.1.1 docker-compose.yml - Container Orchestration</h3>
+
+<h4>🎯 Purpose:</h4>
+<p>This file defines the complete Docker environment for SASA Software. It orchestrates four separate containers that work together as a cohesive system.</p>
+
+<h4>📋 File Structure Overview:</h4>
+<div style="background: #e8f4fd; padding: 15px; border-radius: 5px; border-left: 5px solid #0066cc;">
+<strong>Version:</strong> Docker Compose 3.8<br>
+<strong>Services Defined:</strong> 4 containers<br>
+<strong>Networks:</strong> 1 bridge network (sasa-network)<br>
+<strong>Volumes:</strong> 3 named volumes<br>
+<strong>Total Lines:</strong> 106 lines
+</div>
+
+<h4>🔍 Line-by-Line Analysis:</h4>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 1-3: Header and Version</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>version: '3.8'
+
+services:</code></pre>
+<p><strong>Explanation:</strong></p>
+<ul>
+    <li><code>version: '3.8'</code> - Specifies Docker Compose file format version 3.8</li>
+    <li>Version 3.8 supports all features we need: networks, volumes, health checks</li>
+    <li><code>services:</code> - Begins the services section where all containers are defined</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 4-23: Logger Service Definition</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>  logger-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.logger
+    container_name: sasa-logger-service
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./logs:/app/logs
+      - ./logger-service/config.yaml:/app/logger-service/config.yaml
+    environment:
+      - JWT_SECRET=${JWT_SECRET:-sasa-Software2015}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+    networks:
+      - sasa-network
+    restart: unless-stopped
+    labels:
+      - "com.sasa-software.service=logger"
+      - "com.sasa-software.version=1.0.0"</code></pre>
+
+<p><strong>Detailed Breakdown:</strong></p>
+<ul>
+    <li><strong>Line 4:</strong> <code>logger-service:</code> - Service name identifier</li>
+    <li><strong>Lines 5-7:</strong> Build configuration
+        <ul>
+            <li><code>context: .</code> - Build from project root directory</li>
+            <li><code>dockerfile: Dockerfile.logger</code> - Use specific Dockerfile for logger</li>
+        </ul>
+    </li>
+    <li><strong>Line 8:</strong> <code>container_name: sasa-logger-service</code> - Friendly container name for easy identification</li>
+    <li><strong>Lines 9-10:</strong> Port mapping
+        <ul>
+            <li><code>"8001:8001"</code> - Maps host port 8001 to container port 8001</li>
+            <li>Logger API will be accessible at http://localhost:8001</li>
+        </ul>
+    </li>
+    <li><strong>Lines 11-13:</strong> Volume mounts (data persistence)
+        <ul>
+            <li><code>./logs:/app/logs</code> - Logs directory shared between host and container</li>
+            <li><code>./logger-service/config.yaml:/app/logger-service/config.yaml</code> - Config file mounted for easy editing</li>
+        </ul>
+    </li>
+    <li><strong>Lines 14-17:</strong> Environment variables
+        <ul>
+            <li><code>JWT_SECRET</code> - Secret key for JWT token validation (default: sasa-Software2015)</li>
+            <li><code>SMTP_USER</code> - Email username for notifications (optional)</li>
+            <li><code>SMTP_PASSWORD</code> - Email password (optional)</li>
+            <li>Syntax <code>${VAR:-default}</code> means: use VAR from .env file, or use default value</li>
+        </ul>
+    </li>
+    <li><strong>Lines 18-19:</strong> <code>networks: sasa-network</code> - Connects to shared network for inter-service communication</li>
+    <li><strong>Line 20:</strong> <code>restart: unless-stopped</code> - Auto-restart on failure, unless manually stopped</li>
+    <li><strong>Lines 21-23:</strong> Labels for metadata and container management</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 25-48: Watcher Service Definition</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>  watcher-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.watcher
+    container_name: sasa-watcher-service
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./watched:/app/watched
+      - ./processed:/app/processed
+      - ./logs:/app/logs
+      - ./watcher-service/config.yaml:/app/watcher-service/config.yaml
+    environment:
+      - JWT_SECRET=${JWT_SECRET:-sasa-Software2015}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+    networks:
+      - sasa-network
+    depends_on:
+      - logger-service
+    restart: unless-stopped
+    labels:
+      - "com.sasa-software.service=watcher"
+      - "com.sasa-software.version=1.0.0"</code></pre>
+
+<p><strong>Detailed Breakdown:</strong></p>
+<ul>
+    <li><strong>Lines 26-28:</strong> Build from Dockerfile.watcher</li>
+    <li><strong>Line 31:</strong> <code>"8000:8000"</code> - Watcher health endpoint on port 8000</li>
+    <li><strong>Lines 32-36:</strong> Volume mounts
+        <ul>
+            <li><code>./watched:/app/watched</code> - Input directory for new files</li>
+            <li><code>./processed:/app/processed</code> - Output directory for processed files</li>
+            <li><code>./logs:/app/logs</code> - Shared logs directory</li>
+            <li><code>./watcher-service/config.yaml:/app/watcher-service/config.yaml</code> - Configuration</li>
+        </ul>
+    </li>
+    <li><strong>Line 43-44:</strong> <code>depends_on: logger-service</code> - <strong>CRITICAL:</strong> Ensures logger starts before watcher</li>
+    <li>This prevents connection errors when watcher tries to send data to logger</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 50-67: Watcher Config UI</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>  watcher-config-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.watcher
+    container_name: sasa-watcher-config-ui
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./watcher-service/config.yaml:/app/watcher-service/config.yaml
+    environment:
+      - JWT_SECRET=${JWT_SECRET:-sasa-Software2015}
+    networks:
+      - sasa-network
+    command: ["python", "watcher-service/config_ui.py"]
+    restart: unless-stopped
+    labels:
+      - "com.sasa-software.service=watcher-config-ui"
+      - "com.sasa-software.version=1.0.0"</code></pre>
+
+<p><strong>Key Points:</strong></p>
+<ul>
+    <li><strong>Line 56:</strong> <code>"8080:8080"</code> - Web UI accessible at http://localhost:8080</li>
+    <li><strong>Line 63:</strong> <code>command:</code> - <strong>IMPORTANT:</strong> Overrides default container command</li>
+    <li>Runs config_ui.py instead of watcher.py</li>
+    <li>This allows us to use the same Docker image for both watcher service and its config UI</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 69-86: Logger Config UI</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>  logger-config-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.logger
+    container_name: sasa-logger-config-ui
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./logger-service/config.yaml:/app/logger-service/config.yaml
+    environment:
+      - JWT_SECRET=${JWT_SECRET:-sasa-Software2015}
+    networks:
+      - sasa-network
+    command: ["python", "logger-service/config_ui.py"]
+    restart: unless-stopped
+    labels:
+      - "com.sasa-software.service=logger-config-ui"
+      - "com.sasa-software.version=1.0.0"</code></pre>
+
+<p><strong>Key Points:</strong></p>
+<ul>
+    <li><strong>Line 75:</strong> <code>"8081:8081"</code> - Web UI accessible at http://localhost:8081</li>
+    <li><strong>Line 82:</strong> Runs config_ui.py for logger configuration management</li>
+    <li>Same pattern as watcher config UI - reuses the same Docker image</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 88-92: Network Definition</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>networks:
+  sasa-network:
+    driver: bridge
+    labels:
+      - "com.sasa-software.network=main"</code></pre>
+
+<p><strong>Explanation:</strong></p>
+<ul>
+    <li><code>sasa-network</code> - Custom bridge network for all services</li>
+    <li><code>driver: bridge</code> - Standard Docker bridge network type</li>
+    <li>All 4 containers can communicate with each other using service names</li>
+    <li>Example: watcher-service can reach logger at <code>http://logger-service:8001</code></li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 94-106: Volume Definitions</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>volumes:
+  logs:
+    driver: local
+    labels:
+      - "com.sasa-software.volume=logs"
+  watched:
+    driver: local
+    labels:
+      - "com.sasa-software.volume=watched"
+  processed:
+    driver: local
+    labels:
+      - "com.sasa-software.volume=processed"</code></pre>
+
+<p><strong>Explanation:</strong></p>
+<ul>
+    <li>Defines three named volumes for data persistence</li>
+    <li><code>driver: local</code> - Stores data on the host machine</li>
+    <li>These volumes persist even if containers are removed</li>
+    <li>Labels help with volume management and identification</li>
+</ul>
+</div>
+
+<h4>🎯 Complete Service Communication Flow:</h4>
+<div style="background: #e8f4fd; padding: 20px; border-radius: 8px; border-left: 5px solid #0066cc; margin: 20px 0;">
+<pre style="font-family: 'Courier New', monospace; color: #2c3e50;">
+┌─────────────────────┐
+│   User's Browser    │
+│   localhost:8080    │ ← Watcher Config UI
+│   localhost:8081    │ ← Logger Config UI
+└──────────┬──────────┘
+           │
+    ┌──────┴──────┐
+    │             │
+┌───▼────┐   ┌───▼────┐
+│Config  │   │Config  │
+│UI 8080 │   │UI 8081 │
+└────────┘   └────────┘
+           │
+    ┌──────┴──────┐
+    │             │
+┌───▼────────┐   ┌───▼────────┐
+│  Watcher   │──▶│   Logger   │
+│  Service   │   │  Service   │
+│  :8000     │   │  :8001     │
+└────┬───────┘   └────┬───────┘
+     │                │
+     │                │
+┌────▼──────┐   ┌────▼──────┐
+│ ./watched │   │  ./logs   │
+│./processed│   │           │
+└───────────┘   └───────────┘
+</pre>
+</div>
+
+</div>
+
+<!-- HEBREW SECTION -->
+<div class="hebrew-section">
+<h3>📄 3.1.1 docker-compose.yml - תזמור מכולות</h3>
+
+<h4>🎯 מטרה:</h4>
+<p>קובץ זה מגדיר את סביבת Docker המלאה עבור SASA Software. הוא מתזמר ארבע מכולות נפרדות שעובדות ביחד כמערכת מגובשת.</p>
+
+<h4>📋 סקירת מבנה הקובץ:</h4>
+<div style="background: #e8f4fd; padding: 15px; border-radius: 5px; border-right: 5px solid #0066cc;">
+<strong>גרסה:</strong> Docker Compose 3.8<br>
+<strong>שירותים מוגדרים:</strong> 4 מכולות<br>
+<strong>רשתות:</strong> רשת bridge אחת (sasa-network)<br>
+<strong>נפחים:</strong> 3 נפחים עם שם<br>
+<strong>סך שורות:</strong> 106 שורות
+</div>
+
+<h4>🔍 ניתוח שורה אחר שורה:</h4>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">שורות 1-3: כותרת וגרסה</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>version: '3.8'
+
+services:</code></pre>
+<p><strong>הסבר:</strong></p>
+<ul>
+    <li><code>version: '3.8'</code> - מציין תבנית קובץ Docker Compose גרסה 3.8</li>
+    <li>גרסה 3.8 תומכת בכל התכונות שאנו צריכים: רשתות, נפחים, בדיקות בריאות</li>
+    <li><code>services:</code> - מתחיל את קטע השירותים שבו מוגדרות כל המכולות</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">שורות 4-23: הגדרת שירות Logger</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>  logger-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.logger
+    container_name: sasa-logger-service
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./logs:/app/logs
+      - ./logger-service/config.yaml:/app/logger-service/config.yaml
+    environment:
+      - JWT_SECRET=${JWT_SECRET:-sasa-Software2015}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+    networks:
+      - sasa-network
+    restart: unless-stopped
+    labels:
+      - "com.sasa-software.service=logger"
+      - "com.sasa-software.version=1.0.0"</code></pre>
+
+<p><strong>פירוט מפורט:</strong></p>
+<ul>
+    <li><strong>שורה 4:</strong> <code>logger-service:</code> - מזהה שם שירות</li>
+    <li><strong>שורות 5-7:</strong> הגדרות בנייה
+        <ul>
+            <li><code>context: .</code> - בנה מתיקיית שורש הפרויקט</li>
+            <li><code>dockerfile: Dockerfile.logger</code> - השתמש ב-Dockerfile ספציפי עבור logger</li>
+        </ul>
+    </li>
+    <li><strong>שורה 8:</strong> <code>container_name: sasa-logger-service</code> - שם מכולה ידידותי לזיהוי קל</li>
+    <li><strong>שורות 9-10:</strong> מיפוי פורט
+        <ul>
+            <li><code>"8001:8001"</code> - ממפה פורט מארח 8001 לפורט מכולה 8001</li>
+            <li>Logger API יהיה נגיש ב-http://localhost:8001</li>
+        </ul>
+    </li>
+    <li><strong>שורות 11-13:</strong> עיגוני נפח (שמירת נתונים)
+        <ul>
+            <li><code>./logs:/app/logs</code> - תיקיית לוגים משותפת בין מארח למכולה</li>
+            <li><code>./logger-service/config.yaml:/app/logger-service/config.yaml</code> - קובץ הגדרות מעוגן לעריכה קלה</li>
+        </ul>
+    </li>
+    <li><strong>שורות 14-17:</strong> משתני סביבה
+        <ul>
+            <li><code>JWT_SECRET</code> - מפתח סודי לאימות אסימון JWT (ברירת מחדל: sasa-Software2015)</li>
+            <li><code>SMTP_USER</code> - שם משתמש אימייל להתראות (אופציונלי)</li>
+            <li><code>SMTP_PASSWORD</code> - סיסמת אימייל (אופציונלי)</li>
+            <li>תחביר <code>${VAR:-default}</code> אומר: השתמש ב-VAR מקובץ .env, או השתמש בערך ברירת מחדל</li>
+        </ul>
+    </li>
+    <li><strong>שורות 18-19:</strong> <code>networks: sasa-network</code> - מתחבר לרשת משותפת לתקשורת בין-שירותים</li>
+    <li><strong>שורה 20:</strong> <code>restart: unless-stopped</code> - הפעלה אוטומטית מחדש בכישלון, אלא אם נעצר ידנית</li>
+    <li><strong>שורות 21-23:</strong> תוויות למטא-נתונים וניהול מכולות</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">שורות 25-48: הגדרת שירות Watcher</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>  watcher-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.watcher
+    container_name: sasa-watcher-service
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./watched:/app/watched
+      - ./processed:/app/processed
+      - ./logs:/app/logs
+      - ./watcher-service/config.yaml:/app/watcher-service/config.yaml
+    environment:
+      - JWT_SECRET=${JWT_SECRET:-sasa-Software2015}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+    networks:
+      - sasa-network
+    depends_on:
+      - logger-service
+    restart: unless-stopped
+    labels:
+      - "com.sasa-software.service=watcher"
+      - "com.sasa-software.version=1.0.0"</code></pre>
+
+<p><strong>פירוט מפורט:</strong></p>
+<ul>
+    <li><strong>שורות 26-28:</strong> בנה מ-Dockerfile.watcher</li>
+    <li><strong>שורה 31:</strong> <code>"8000:8000"</code> - נקודת קצה בריאות Watcher על פורט 8000</li>
+    <li><strong>שורות 32-36:</strong> עיגוני נפח
+        <ul>
+            <li><code>./watched:/app/watched</code> - תיקיית קלט לקבצים חדשים</li>
+            <li><code>./processed:/app/processed</code> - תיקיית פלט לקבצים מעובדים</li>
+            <li><code>./logs:/app/logs</code> - תיקיית לוגים משותפת</li>
+            <li><code>./watcher-service/config.yaml:/app/watcher-service/config.yaml</code> - הגדרות</li>
+        </ul>
+    </li>
+    <li><strong>שורות 43-44:</strong> <code>depends_on: logger-service</code> - <strong>קריטי:</strong> מבטיח ש-logger יתחיל לפני watcher</li>
+    <li>זה מונע שגיאות חיבור כאשר watcher מנסה לשלוח נתונים ל-logger</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">שורות 50-67: ממשק הגדרות Watcher</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>  watcher-config-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.watcher
+    container_name: sasa-watcher-config-ui
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./watcher-service/config.yaml:/app/watcher-service/config.yaml
+    environment:
+      - JWT_SECRET=${JWT_SECRET:-sasa-Software2015}
+    networks:
+      - sasa-network
+    command: ["python", "watcher-service/config_ui.py"]
+    restart: unless-stopped
+    labels:
+      - "com.sasa-software.service=watcher-config-ui"
+      - "com.sasa-software.version=1.0.0"</code></pre>
+
+<p><strong>נקודות מפתח:</strong></p>
+<ul>
+    <li><strong>שורה 56:</strong> <code>"8080:8080"</code> - ממשק ווב נגיש ב-http://localhost:8080</li>
+    <li><strong>שורה 63:</strong> <code>command:</code> - <strong>חשוב:</strong> עוקף את פקודת המכולה הברירת מחדל</li>
+    <li>מריץ config_ui.py במקום watcher.py</li>
+    <li>זה מאפשר לנו להשתמש באותה תמונת Docker גם לשירות watcher וגם לממשק ההגדרות שלו</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">שורות 69-86: ממשק הגדרות Logger</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>  logger-config-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.logger
+    container_name: sasa-logger-config-ui
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./logger-service/config.yaml:/app/logger-service/config.yaml
+    environment:
+      - JWT_SECRET=${JWT_SECRET:-sasa-Software2015}
+    networks:
+      - sasa-network
+    command: ["python", "logger-service/config_ui.py"]
+    restart: unless-stopped
+    labels:
+      - "com.sasa-software.service=logger-config-ui"
+      - "com.sasa-software.version=1.0.0"</code></pre>
+
+<p><strong>נקודות מפתח:</strong></p>
+<ul>
+    <li><strong>שורה 75:</strong> <code>"8081:8081"</code> - ממשק ווב נגיש ב-http://localhost:8081</li>
+    <li><strong>שורה 82:</strong> מריץ config_ui.py לניהול הגדרות logger</li>
+    <li>אותו תבנית כמו ממשק הגדרות watcher - משתמש מחדש באותה תמונת Docker</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">שורות 88-92: הגדרת רשת</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>networks:
+  sasa-network:
+    driver: bridge
+    labels:
+      - "com.sasa-software.network=main"</code></pre>
+
+<p><strong>הסבר:</strong></p>
+<ul>
+    <li><code>sasa-network</code> - רשת bridge מותאמת אישית לכל השירותים</li>
+    <li><code>driver: bridge</code> - סוג רשת bridge סטנדרטי של Docker</li>
+    <li>כל 4 המכולות יכולות לתקשר זו עם זו באמצעות שמות שירות</li>
+    <li>דוגמה: watcher-service יכול להגיע ל-logger ב-<code>http://logger-service:8001</code></li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">שורות 94-106: הגדרות נפח</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>volumes:
+  logs:
+    driver: local
+    labels:
+      - "com.sasa-software.volume=logs"
+  watched:
+    driver: local
+    labels:
+      - "com.sasa-software.volume=watched"
+  processed:
+    driver: local
+    labels:
+      - "com.sasa-software.volume=processed"</code></pre>
+
+<p><strong>הסבר:</strong></p>
+<ul>
+    <li>מגדיר שלושה נפחים עם שם לשמירת נתונים</li>
+    <li><code>driver: local</code> - מאחסן נתונים במכונת המארח</li>
+    <li>נפחים אלה נשמרים גם אם המכולות מוסרות</li>
+    <li>תוויות עוזרות בניהול נפחים וזיהוי</li>
+</ul>
+</div>
+
+<h4>🎯 זרימת תקשורת שירות מלאה:</h4>
+<div style="background: #e8f4fd; padding: 20px; border-radius: 8px; border-right: 5px solid #0066cc; margin: 20px 0;">
+<pre style="font-family: 'Courier New', monospace; color: #2c3e50; direction: ltr;">
+┌─────────────────────┐
+│   User's Browser    │
+│   localhost:8080    │ ← Watcher Config UI
+│   localhost:8081    │ ← Logger Config UI
+└──────────┬──────────┘
+           │
+    ┌──────┴──────┐
+    │             │
+┌───▼────┐   ┌───▼────┐
+│Config  │   │Config  │
+│UI 8080 │   │UI 8081 │
+└────────┘   └────────┘
+           │
+    ┌──────┴──────┐
+    │             │
+┌───▼────────┐   ┌───▼────────┐
+│  Watcher   │──▶│   Logger   │
+│  Service   │   │  Service   │
+│  :8000     │   │  :8001     │
+└────┬───────┘   └────┬───────┘
+     │                │
+     │                │
+┌────▼──────┐   ┌────▼──────┐
+│ ./watched │   │  ./logs   │
+│./processed│   │           │
+└───────────┘   └───────────┘
+</pre>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
 </body>
 </html>

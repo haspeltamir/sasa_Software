@@ -3968,6 +3968,54 @@ fi</code></pre>
     <li><code>> /dev/null</code> - Discard output, only check exit code</li>
     <li>Exit code 0 = success, non-zero = failure</li>
 </ul>
+
+<h6>Lines 72-90: User Information Display</h6>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>echo ""
+echo "🎉 SASA Software Microservices are now running!"
+echo ""
+echo "📊 Service Endpoints:"
+echo "   • Logger Service:      http://localhost:8001"
+echo "   • Logger Config UI:    http://localhost:8081"
+echo "   • Watcher Config UI:   http://localhost:8080"
+echo ""
+echo "📁 Directories:"
+echo "   • Watched:    ./watched"
+echo "   • Processed:  ./processed"
+echo "   • Logs:       ./logs"
+echo ""
+echo "🔧 Management Commands:"
+echo "   • View logs:     docker-compose logs -f"
+echo "   • Stop services: docker-compose down"
+echo "   • Restart:       docker-compose restart"
+echo ""
+echo "💡 To test the system, add a file to the './watched' directory."</code></pre>
+<p><strong>User-Friendly Output:</strong></p>
+<ul>
+    <li><strong>Success Message:</strong> Confirms all services are running</li>
+    <li><strong>Service Endpoints:</strong> Provides clickable URLs for all services:
+        <ul>
+            <li>Logger Service API on port 8001</li>
+            <li>Logger Config UI on port 8081</li>
+            <li>Watcher Config UI on port 8080</li>
+        </ul>
+    </li>
+    <li><strong>Directory Locations:</strong> Shows where to find important folders:
+        <ul>
+            <li><code>./watched</code> - Drop files here for processing</li>
+            <li><code>./processed</code> - Archived files after processing</li>
+            <li><code>./logs</code> - Log files created by the system</li>
+        </ul>
+    </li>
+    <li><strong>Management Commands:</strong> Quick reference for common tasks:
+        <ul>
+            <li><code>docker-compose logs -f</code> - Follow real-time logs</li>
+            <li><code>docker-compose down</code> - Stop all services</li>
+            <li><code>docker-compose restart</code> - Restart services</li>
+        </ul>
+    </li>
+    <li><strong>Usage Tip:</strong> Clear instructions on how to test the system</li>
+</ul>
 </div>
 
 <h4>📝 Detailed Analysis: start.bat (Windows CMD)</h4>
@@ -4011,6 +4059,33 @@ if %errorlevel% equ 0 (
 ) else (
     echo ❌ Logger Service failed to start
 )</code></pre>
+
+<h6>User Information Display:</h6>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>echo 🎉 SASA Software Microservices are now running!
+echo.
+echo 📊 Service Endpoints:
+echo    • Logger Service:      http://localhost:8001
+echo    • Logger Config UI:    http://localhost:8081
+echo    • Watcher Config UI:   http://localhost:8080
+echo.
+echo 📁 Directories:
+echo    • Watched:    .\watched
+echo    • Processed:  .\processed
+echo    • Logs:       .\logs
+echo.
+echo 🔧 Management Commands:
+echo    • View logs:     docker-compose logs -f
+echo    • Stop services: docker-compose down
+echo    • Restart:       docker-compose restart
+echo.
+echo 💡 To test the system, add a file to the '.\watched' directory.</code></pre>
+<p><strong>Windows Batch Specifics:</strong></p>
+<ul>
+    <li><code>echo.</code> - Prints blank line (Windows batch syntax)</li>
+    <li><code>.\watched</code> - Windows path notation with backslash</li>
+    <li>Same structure as Bash version but adapted for Windows</li>
+</ul>
 
 <h6>Pause at End:</h6>
 <pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
@@ -4067,6 +4142,36 @@ foreach ($dir in $directories) {
 catch {
     Write-Host "⚠️ Logger Service may not be ready yet" -ForegroundColor Yellow
 }</code></pre>
+
+<h6>User Information Display with Colors:</h6>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>Write-Host ""
+Write-Host "📊 Service Information:" -ForegroundColor Cyan
+Write-Host "   • Logger Service:      http://localhost:8001" -ForegroundColor White
+Write-Host "   • Logger Config UI:    http://localhost:8081" -ForegroundColor White
+Write-Host "   • Watcher Config UI:   http://localhost:8080" -ForegroundColor White
+Write-Host ""
+Write-Host "📁 Directories:" -ForegroundColor Cyan
+Write-Host "   • Watched:    .\watched" -ForegroundColor White
+Write-Host "   • Processed:  .\processed" -ForegroundColor White
+Write-Host "   • Logs:       .\logs" -ForegroundColor White
+Write-Host ""
+Write-Host "💡 To test the system, add a file to the '.\watched' directory." -ForegroundColor Yellow
+Write-Host "🛑 Press Ctrl+C to stop the services." -ForegroundColor Red</code></pre>
+<p><strong>PowerShell Advantages:</strong></p>
+<ul>
+    <li><strong>Rich Color Output:</strong> Uses <code>-ForegroundColor</code> parameter for colored text:
+        <ul>
+            <li>Cyan for headers and section titles</li>
+            <li>White for informational content</li>
+            <li>Yellow for tips and warnings</li>
+            <li>Red for important notices</li>
+        </ul>
+    </li>
+    <li><strong>Professional Presentation:</strong> Color-coded output makes information easier to scan</li>
+    <li><strong>Service Control Hint:</strong> Includes Ctrl+C instruction for stopping services</li>
+    <li><strong>Windows Path Notation:</strong> Uses <code>.\watched</code> instead of <code>./watched</code></li>
+</ul>
 </div>
 
 <h4>📊 Comparison Matrix:</h4>

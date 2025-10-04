@@ -4567,12 +4567,1445 @@ Write-Host "🛑 Press Ctrl+C to stop the services." -ForegroundColor Red</code>
 </ul>
 </div>
 
-<h4>📌 תצוגה מקדימה של הסעיף הבא:</h4>
-<p>בסעיף 3.2, נצלול לעומק לתוך תיקיית <code>shared/</code>, ונבחן כלי עזר משותפים המשמשים את שני השירותים:</p>
+</div>
+
+</div>
+
+</div>
+
+<!-- SUBSECTION 3.2: SHARED DIRECTORY ANALYSIS -->
+<div class="page-break">
+<h1 style="text-align: center; border-bottom: 3px solid #9b59b6; padding-bottom: 20px; color: #2c3e50;">
+    📂 SECTION 3.2: SHARED DIRECTORY ANALYSIS<br>
+    קטע 3.2: ניתוח תיקיית SHARED
+</h1>
+
+<div class="bilingual-container">
+
+<!-- ENGLISH SECTION -->
+<div class="english-section">
+<h2>🔗 3.2.0 Shared Components Overview</h2>
+
+<p>The <code>shared/</code> directory contains reusable code shared between the watcher and logger services. This promotes code reuse, consistency, and easier maintenance. Both services use these utilities for JWT authentication, configuration management, notifications, and logging.</p>
+
+<h3>📂 Shared Directory Structure:</h3>
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; font-family: 'Courier New', monospace; font-size: 12px;">
+<pre>
+shared/
+├── 📄 jwt_manager.py      # JWT token creation and validation (49 lines)
+└── 📄 utils.py            # Configuration, notifications, logging (229 lines)
+</pre>
+</div>
+
+<h3>🎯 Purpose of Shared Components:</h3>
+<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+    <thead style="background: #9b59b6; color: white;">
+        <tr>
+            <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">File</th>
+            <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Primary Classes</th>
+            <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Purpose</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>jwt_manager.py</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">JWTManager</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Secure JWT token generation and validation for inter-service authentication</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>utils.py</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">ConfigManager, NotificationHandler</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">Configuration loading, email/syslog notifications, logging setup, file utilities</td>
+        </tr>
+    </tbody>
+</table>
+
+</div>
+
+<!-- HEBREW SECTION -->
+<div class="hebrew-section">
+<h2>🔗 3.2.0 סקירת רכיבים משותפים</h2>
+
+<p>תיקיית <code>shared/</code> מכילה קוד הניתן לשימוש חוזר בין שירותי הצפייה והרישום. זה מקדם שימוש חוזר בקוד, עקביות ותחזוקה קלה יותר. שני השירותים משתמשים בכלים אלה לאימות JWT, ניהול הגדרות, התראות ורישום.</p>
+
+<h3>📂 מבנה תיקיית Shared:</h3>
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; font-family: 'Courier New', monospace; font-size: 12px;">
+<pre>
+shared/
+├── 📄 jwt_manager.py      # יצירה ואימות אסימוני JWT (49 שורות)
+└── 📄 utils.py            # הגדרות, התראות, רישום (229 שורות)
+</pre>
+</div>
+
+<h3>🎯 מטרת הרכיבים המשותפים:</h3>
+<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+    <thead style="background: #9b59b6; color: white;">
+        <tr>
+            <th style="padding: 12px; border: 1px solid #ddd; text-align: right;">קובץ</th>
+            <th style="padding: 12px; border: 1px solid #ddd; text-align: right;">מחלקות עיקריות</th>
+            <th style="padding: 12px; border: 1px solid #ddd; text-align: right;">מטרה</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>jwt_manager.py</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">JWTManager</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">יצירה ואימות מאובטח של אסימוני JWT לאימות בין-שירותי</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>utils.py</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">ConfigManager, NotificationHandler</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">טעינת הגדרות, התראות אימייל/syslog, הגדרת רישום, כלי קבצים</td>
+        </tr>
+    </tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- SUBSECTION 3.2.1: jwt_manager.py -->
+<div class="page-break">
+<h2 style="border-bottom: 2px solid #3498db; padding-bottom: 10px; color: #2c3e50;">
+    📄 3.2.1 jwt_manager.py - JWT Authentication
+</h2>
+
+<div class="bilingual-container">
+
+<!-- ENGLISH SECTION -->
+<div class="english-section">
+<h3>🎯 Purpose:</h3>
+<p>This module provides secure JWT (JSON Web Token) authentication for inter-service communication. The watcher service generates JWT tokens to authenticate requests sent to the logger service. This ensures only authorized services can log file events.</p>
+
+<h4>📋 File Structure Overview:</h4>
+<div style="background: #e8f4fd; padding: 15px; border-radius: 5px; border-left: 5px solid #0066cc;">
+<strong>Total Lines:</strong> 49 lines<br>
+<strong>Main Class:</strong> JWTManager<br>
+<strong>Methods:</strong> 4 public methods<br>
+<strong>Dependencies:</strong> PyJWT, datetime, typing<br>
+<strong>Algorithm:</strong> HS256 (HMAC with SHA-256)
+</div>
+
+<h4>🔍 Line-by-Line Analysis:</h4>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 1-3: Imports</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>import jwt
+import datetime
+from typing import Dict, Any, Optional</code></pre>
+
+<p><strong>Explanation:</strong></p>
 <ul>
-    <li>📄 <code>jwt_manager.py</code> - יצירה ואימות אסימוני JWT</li>
-    <li>📄 <code>utils.py</code> - ניהול הגדרות, התראות וכלי רישום</li>
+    <li><code>jwt</code> - PyJWT library for creating and validating JWT tokens</li>
+    <li><code>datetime</code> - For setting token expiration times</li>
+    <li><code>typing</code> - Type hints for better code documentation and IDE support</li>
 </ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 6-11: Class Definition and Constructor</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>class JWTManager:
+    """Manages JWT token creation and validation"""
+    
+    def __init__(self, secret: str, algorithm: str = "HS256"):
+        self.secret = secret
+        self.algorithm = algorithm</code></pre>
+
+<p><strong>Detailed Breakdown:</strong></p>
+<ul>
+    <li><strong>Line 6:</strong> <code>class JWTManager:</code> - Main class for JWT operations</li>
+    <li><strong>Line 9:</strong> <code>__init__</code> constructor accepts:
+        <ul>
+            <li><code>secret: str</code> - Shared secret key used for signing/verifying tokens</li>
+            <li><code>algorithm: str = "HS256"</code> - Cryptographic algorithm (default HS256)</li>
+        </ul>
+    </li>
+    <li><strong>Lines 10-11:</strong> Store parameters as instance variables</li>
+    <li><strong>Security Note:</strong> The secret must be kept confidential and shared only between services</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 13-23: create_token Method</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>def create_token(self, issuer: str, expiry_minutes: int = 5, **additional_claims) -> str:
+    """Create a JWT token with the specified claims"""
+    payload = {
+        "iss": issuer,
+        "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=expiry_minutes),
+        "iat": datetime.datetime.utcnow(),
+        **additional_claims
+    }
+    
+    token = jwt.encode(payload, self.secret, algorithm=self.algorithm)
+    return token</code></pre>
+
+<p><strong>Detailed Breakdown:</strong></p>
+<ul>
+    <li><strong>Line 13:</strong> Method signature with parameters:
+        <ul>
+            <li><code>issuer: str</code> - Name of service creating the token (e.g., "watcher-service")</li>
+            <li><code>expiry_minutes: int = 5</code> - Token lifetime (default 5 minutes)</li>
+            <li><code>**additional_claims</code> - Optional extra data to include in token</li>
+        </ul>
+    </li>
+    <li><strong>Lines 15-19:</strong> Token payload construction:
+        <ul>
+            <li><code>"iss"</code> - Issuer claim (who created the token)</li>
+            <li><code>"exp"</code> - Expiration time (current time + expiry_minutes)</li>
+            <li><code>"iat"</code> - Issued at time (current UTC time)</li>
+            <li><code>**additional_claims</code> - Spreads any extra claims into payload</li>
+        </ul>
+    </li>
+    <li><strong>Line 22:</strong> <code>jwt.encode()</code> - Creates signed JWT token string</li>
+    <li><strong>Line 23:</strong> Returns the encoded token</li>
+    <li><strong>Usage Example:</strong> Watcher service calls this before sending file data to logger</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 25-39: validate_token Method</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>def validate_token(self, token: str, expected_issuer: str = None) -> Dict[str, Any]:
+    """Validate a JWT token and return its payload"""
+    try:
+        payload = jwt.decode(token, self.secret, algorithms=[self.algorithm])
+        
+        # Check issuer if specified
+        if expected_issuer and payload.get("iss") != expected_issuer:
+            raise jwt.InvalidTokenError("Invalid issuer")
+        
+        return payload
+        
+    except jwt.ExpiredSignatureError:
+        raise jwt.InvalidTokenError("Token has expired")
+    except jwt.InvalidTokenError:
+        raise jwt.InvalidTokenError("Invalid token")</code></pre>
+
+<p><strong>Detailed Breakdown:</strong></p>
+<ul>
+    <li><strong>Line 25:</strong> Method accepts:
+        <ul>
+            <li><code>token: str</code> - JWT token to validate</li>
+            <li><code>expected_issuer: str = None</code> - Optional issuer verification</li>
+        </ul>
+    </li>
+    <li><strong>Line 28:</strong> <code>jwt.decode()</code> - Decodes and validates token signature</li>
+    <li><strong>Lines 30-32:</strong> Issuer verification:
+        <ul>
+            <li>If <code>expected_issuer</code> provided, checks token's issuer matches</li>
+            <li>Prevents tokens from unauthorized services</li>
+        </ul>
+    </li>
+    <li><strong>Line 34:</strong> Returns payload if valid</li>
+    <li><strong>Lines 36-39:</strong> Exception handling:
+        <ul>
+            <li><code>ExpiredSignatureError</code> - Token's expiration time has passed</li>
+            <li><code>InvalidTokenError</code> - Token signature invalid or malformed</li>
+        </ul>
+    </li>
+    <li><strong>Security Note:</strong> Failed validation raises exception - caller must handle errors</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 41-49: extract_token_from_header Method</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>def extract_token_from_header(self, authorization_header: str) -> str:
+    """Extract JWT token from Authorization header"""
+    if not authorization_header:
+        raise ValueError("Authorization header is missing")
+    
+    if not authorization_header.startswith("Bearer "):
+        raise ValueError("Authorization header must start with 'Bearer '")
+    
+    return authorization_header[7:]  # Remove "Bearer " prefix</code></pre>
+
+<p><strong>Detailed Breakdown:</strong></p>
+<ul>
+    <li><strong>Line 41:</strong> Extracts token from HTTP Authorization header</li>
+    <li><strong>Lines 43-44:</strong> Validates header exists</li>
+    <li><strong>Lines 46-47:</strong> Validates header format:
+        <ul>
+            <li>Standard format: <code>Authorization: Bearer &lt;token&gt;</code></li>
+            <li>Must start with "Bearer " prefix</li>
+        </ul>
+    </li>
+    <li><strong>Line 49:</strong> Strips "Bearer " prefix and returns token
+        <ul>
+            <li><code>[7:]</code> - Skips first 7 characters ("Bearer ")</li>
+        </ul>
+    </li>
+    <li><strong>Usage:</strong> Logger service uses this to extract token from incoming requests</li>
+</ul>
+</div>
+
+<h4>📊 Usage Flow:</h4>
+<div style="background: #d4edda; padding: 15px; border-radius: 5px; border-left: 5px solid #28a745;">
+<ol>
+    <li><strong>Watcher Service (Sender):</strong>
+        <ul>
+            <li>Creates JWTManager with shared secret</li>
+            <li>Calls <code>create_token("watcher-service")</code></li>
+            <li>Includes token in Authorization header: <code>"Bearer &lt;token&gt;"</code></li>
+            <li>Sends HTTP request to logger</li>
+        </ul>
+    </li>
+    <li><strong>Logger Service (Receiver):</strong>
+        <ul>
+            <li>Creates JWTManager with same shared secret</li>
+            <li>Calls <code>extract_token_from_header()</code> to get token</li>
+            <li>Calls <code>validate_token(token, "watcher-service")</code></li>
+            <li>If valid, processes request; if invalid, rejects with 401 Unauthorized</li>
+        </ul>
+    </li>
+</ol>
+</div>
+
+<h4>🔐 Security Considerations:</h4>
+<div style="background: #fff3cd; padding: 15px; border-radius: 5px; border-left: 5px solid #ffc107;">
+<ul>
+    <li>⚠️ <strong>Secret Management:</strong> Secret must be identical on both services</li>
+    <li>⚠️ <strong>Token Expiration:</strong> Short 5-minute lifetime prevents replay attacks</li>
+    <li>⚠️ <strong>HTTPS Required:</strong> Always use HTTPS in production to prevent token interception</li>
+    <li>⚠️ <strong>Issuer Validation:</strong> Verify issuer to ensure tokens come from expected service</li>
+    <li>✅ <strong>Algorithm:</strong> HS256 is secure when secret is strong and kept confidential</li>
+</ul>
+</div>
+
+</div>
+
+<!-- HEBREW SECTION -->
+<div class="hebrew-section">
+<h3>🎯 מטרה:</h3>
+<p>מודול זה מספק אימות JWT (JSON Web Token) מאובטח לתקשורת בין-שירותית. שירות הצפייה יוצר אסימוני JWT כדי לאמת בקשות שנשלחו לשירות הרישום. זה מבטיח שרק שירותים מורשים יכולים לרשום אירועי קבצים.</p>
+
+<h4>📋 סקירת מבנה הקובץ:</h4>
+<div style="background: #e8f4fd; padding: 15px; border-radius: 5px; border-right: 5px solid #0066cc;">
+<strong>סך שורות:</strong> 49 שורות<br>
+<strong>מחלקה עיקרית:</strong> JWTManager<br>
+<strong>מתודות:</strong> 4 מתודות פומביות<br>
+<strong>תלויות:</strong> PyJWT, datetime, typing<br>
+<strong>אלגוריתם:</strong> HS256 (HMAC עם SHA-256)
+</div>
+
+<h4>🔍 ניתוח שורה אחר שורה:</h4>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">שורות 1-3: ייבואים</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>import jwt
+import datetime
+from typing import Dict, Any, Optional</code></pre>
+
+<p><strong>הסבר:</strong></p>
+<ul>
+    <li><code>jwt</code> - ספריית PyJWT ליצירה ואימות אסימוני JWT</li>
+    <li><code>datetime</code> - להגדרת זמני תפוגה של אסימונים</li>
+    <li><code>typing</code> - רמזי טיפוס לתיעוד קוד טוב יותר ותמיכת IDE</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">שורות 6-11: הגדרת מחלקה ובנאי</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>class JWTManager:
+    """Manages JWT token creation and validation"""
+    
+    def __init__(self, secret: str, algorithm: str = "HS256"):
+        self.secret = secret
+        self.algorithm = algorithm</code></pre>
+
+<p><strong>פירוט מפורט:</strong></p>
+<ul>
+    <li><strong>שורה 6:</strong> <code>class JWTManager:</code> - מחלקה ראשית לפעולות JWT</li>
+    <li><strong>שורה 9:</strong> בנאי <code>__init__</code> מקבל:
+        <ul>
+            <li><code>secret: str</code> - מפתח סודי משותף המשמש לחתימה/אימות אסימונים</li>
+            <li><code>algorithm: str = "HS256"</code> - אלגוריתם קריפטוגרפי (ברירת מחדל HS256)</li>
+        </ul>
+    </li>
+    <li><strong>שורות 10-11:</strong> שמירת פרמטרים כמשתני מופע</li>
+    <li><strong>הערת אבטחה:</strong> המפתח הסודי חייב להישמר חסוי ולהיות משותף רק בין שירותים</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">שורות 13-23: מתודת create_token</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>def create_token(self, issuer: str, expiry_minutes: int = 5, **additional_claims) -> str:
+    """Create a JWT token with the specified claims"""
+    payload = {
+        "iss": issuer,
+        "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=expiry_minutes),
+        "iat": datetime.datetime.utcnow(),
+        **additional_claims
+    }
+    
+    token = jwt.encode(payload, self.secret, algorithm=self.algorithm)
+    return token</code></pre>
+
+<p><strong>פירוט מפורט:</strong></p>
+<ul>
+    <li><strong>שורה 13:</strong> חתימת מתודה עם פרמטרים:
+        <ul>
+            <li><code>issuer: str</code> - שם השירות היוצר את האסימון (למשל, "watcher-service")</li>
+            <li><code>expiry_minutes: int = 5</code> - משך חיי האסימון (ברירת מחדל 5 דקות)</li>
+            <li><code>**additional_claims</code> - נתונים נוספים אופציונליים לכלול באסימון</li>
+        </ul>
+    </li>
+    <li><strong>שורות 15-19:</strong> בניית payload האסימון:
+        <ul>
+            <li><code>"iss"</code> - טענת מנפיק (מי יצר את האסימון)</li>
+            <li><code>"exp"</code> - זמן תפוגה (זמן נוכחי + expiry_minutes)</li>
+            <li><code>"iat"</code> - זמן הנפקה (זמן UTC נוכחי)</li>
+            <li><code>**additional_claims</code> - מפזר טענות נוספות ל-payload</li>
+        </ul>
+    </li>
+    <li><strong>שורה 22:</strong> <code>jwt.encode()</code> - יוצר מחרוזת אסימון JWT חתומה</li>
+    <li><strong>שורה 23:</strong> מחזיר את האסימון המקודד</li>
+    <li><strong>דוגמת שימוש:</strong> שירות הצפייה קורא לזה לפני שליחת נתוני קובץ לרישום</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">שורות 25-39: מתודת validate_token</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>def validate_token(self, token: str, expected_issuer: str = None) -> Dict[str, Any]:
+    """Validate a JWT token and return its payload"""
+    try:
+        payload = jwt.decode(token, self.secret, algorithms=[self.algorithm])
+        
+        # Check issuer if specified
+        if expected_issuer and payload.get("iss") != expected_issuer:
+            raise jwt.InvalidTokenError("Invalid issuer")
+        
+        return payload
+        
+    except jwt.ExpiredSignatureError:
+        raise jwt.InvalidTokenError("Token has expired")
+    except jwt.InvalidTokenError:
+        raise jwt.InvalidTokenError("Invalid token")</code></pre>
+
+<p><strong>פירוט מפורט:</strong></p>
+<ul>
+    <li><strong>שורה 25:</strong> המתודה מקבלת:
+        <ul>
+            <li><code>token: str</code> - אסימון JWT לאימות</li>
+            <li><code>expected_issuer: str = None</code> - אימות מנפיק אופציונלי</li>
+        </ul>
+    </li>
+    <li><strong>שורה 28:</strong> <code>jwt.decode()</code> - מפענח ומאמת חתימת אסימון</li>
+    <li><strong>שורות 30-32:</strong> אימות מנפיק:
+        <ul>
+            <li>אם <code>expected_issuer</code> סופק, בודק שמנפיק האסימון תואם</li>
+            <li>מונע אסימונים משירותים לא מורשים</li>
+        </ul>
+    </li>
+    <li><strong>שורה 34:</strong> מחזיר payload אם תקף</li>
+    <li><strong>שורות 36-39:</strong> טיפול בחריגות:
+        <ul>
+            <li><code>ExpiredSignatureError</code> - זמן התפוגה של האסימון עבר</li>
+            <li><code>InvalidTokenError</code> - חתימת האסימון לא תקפה או פגומה</li>
+        </ul>
+    </li>
+    <li><strong>הערת אבטחה:</strong> אימות שנכשל מעלה חריגה - הקורא חייב לטפל בשגיאות</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">שורות 41-49: מתודת extract_token_from_header</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>def extract_token_from_header(self, authorization_header: str) -> str:
+    """Extract JWT token from Authorization header"""
+    if not authorization_header:
+        raise ValueError("Authorization header is missing")
+    
+    if not authorization_header.startswith("Bearer "):
+        raise ValueError("Authorization header must start with 'Bearer '")
+    
+    return authorization_header[7:]  # Remove "Bearer " prefix</code></pre>
+
+<p><strong>פירוט מפורט:</strong></p>
+<ul>
+    <li><strong>שורה 41:</strong> מחלץ אסימון מכותרת HTTP Authorization</li>
+    <li><strong>שורות 43-44:</strong> מאמת שהכותרת קיימת</li>
+    <li><strong>שורות 46-47:</strong> מאמת תבנית כותרת:
+        <ul>
+            <li>תבנית סטנדרטית: <code>Authorization: Bearer &lt;token&gt;</code></li>
+            <li>חייב להתחיל עם קידומת "Bearer "</li>
+        </ul>
+    </li>
+    <li><strong>שורה 49:</strong> מסיר את קידומת "Bearer " ומחזיר אסימון
+        <ul>
+            <li><code>[7:]</code> - מדלג על 7 התווים הראשונים ("Bearer ")</li>
+        </ul>
+    </li>
+    <li><strong>שימוש:</strong> שירות הרישום משתמש בזה כדי לחלץ אסימון מבקשות נכנסות</li>
+</ul>
+</div>
+
+<h4>📊 זרימת שימוש:</h4>
+<div style="background: #d4edda; padding: 15px; border-radius: 5px; border-right: 5px solid #28a745;">
+<ol>
+    <li><strong>שירות צפייה (שולח):</strong>
+        <ul>
+            <li>יוצר JWTManager עם סוד משותף</li>
+            <li>קורא ל-<code>create_token("watcher-service")</code></li>
+            <li>כולל אסימון בכותרת Authorization: <code>"Bearer &lt;token&gt;"</code></li>
+            <li>שולח בקשת HTTP לרישום</li>
+        </ul>
+    </li>
+    <li><strong>שירות רישום (מקבל):</strong>
+        <ul>
+            <li>יוצר JWTManager עם אותו סוד משותף</li>
+            <li>קורא ל-<code>extract_token_from_header()</code> כדי לקבל אסימון</li>
+            <li>קורא ל-<code>validate_token(token, "watcher-service")</code></li>
+            <li>אם תקף, מעבד בקשה; אם לא תקף, דוחה עם 401 Unauthorized</li>
+        </ul>
+    </li>
+</ol>
+</div>
+
+<h4>🔐 שיקולי אבטחה:</h4>
+<div style="background: #fff3cd; padding: 15px; border-radius: 5px; border-right: 5px solid #ffc107;">
+<ul>
+    <li>⚠️ <strong>ניהול סודות:</strong> הסוד חייב להיות זהה בשני השירותים</li>
+    <li>⚠️ <strong>תפוגת אסימון:</strong> משך חיים קצר של 5 דקות מונע התקפות replay</li>
+    <li>⚠️ <strong>נדרש HTTPS:</strong> תמיד השתמש ב-HTTPS בסביבת ייצור כדי למנוע יירוט אסימונים</li>
+    <li>⚠️ <strong>אימות מנפיק:</strong> אמת מנפיק כדי להבטיח שאסימונים מגיעים משירות צפוי</li>
+    <li>✅ <strong>אלגוריתם:</strong> HS256 מאובטח כאשר הסוד חזק ונשמר חסוי</li>
+</ul>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- SUBSECTION 3.2.2: utils.py -->
+<div class="page-break">
+<h2 style="border-bottom: 2px solid #3498db; padding-bottom: 10px; color: #2c3e50;">
+    📄 3.2.2 utils.py - Shared Utilities
+</h2>
+
+<div class="bilingual-container">
+
+<!-- ENGLISH SECTION -->
+<div class="english-section">
+<h3>🎯 Purpose:</h3>
+<p>This module provides essential utility functions and classes shared across both services. It handles configuration loading, email and syslog notifications, logging setup, and file operations. This centralized approach ensures consistent behavior and reduces code duplication.</p>
+
+<h4>📋 File Structure Overview:</h4>
+<div style="background: #e8f4fd; padding: 15px; border-radius: 5px; border-left: 5px solid #0066cc;">
+<strong>Total Lines:</strong> 229 lines<br>
+<strong>Classes:</strong> ConfigManager, NotificationHandler<br>
+<strong>Functions:</strong> setup_logging(), sanitize_filename(), get_file_hash()<br>
+<strong>Dependencies:</strong> PyYAML, smtplib, syslog (Unix), logging<br>
+<strong>Cross-Platform:</strong> Handles Windows/Unix differences
+</div>
+
+<h4>🔍 Detailed Component Analysis:</h4>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 1-16: Imports and Platform Detection</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>import os
+import logging
+import smtplib
+try:
+    import syslog
+    HAS_SYSLOG = True
+except ImportError:
+    # syslog is not available on Windows
+    HAS_SYSLOG = False
+    syslog = None
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from typing import Optional, List
+from datetime import datetime
+import yaml</code></pre>
+
+<p><strong>Explanation:</strong></p>
+<ul>
+    <li><strong>Lines 1-3:</strong> Core Python libraries for OS operations, logging, email</li>
+    <li><strong>Lines 4-10:</strong> <strong>CRITICAL:</strong> Cross-platform syslog handling
+        <ul>
+            <li><code>syslog</code> module only available on Unix/Linux systems</li>
+            <li><code>HAS_SYSLOG</code> flag detects platform capability</li>
+            <li>Windows systems will use Event Log as fallback (implemented later)</li>
+        </ul>
+    </li>
+    <li><strong>Lines 11-15:</strong> Email composition, type hints, datetime, YAML parsing</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 18-24: NotificationHandler Class - Constructor</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>class NotificationHandler:
+    """Handles various notification methods for errors and alerts"""
+    
+    def __init__(self, config: dict):
+        self.config = config
+        self.email_config = config.get('notifications', {}).get('email', {})
+        self.syslog_config = config.get('notifications', {}).get('syslog', {})</code></pre>
+
+<p><strong>Detailed Breakdown:</strong></p>
+<ul>
+    <li><strong>Line 18:</strong> Class for managing notifications (email, syslog)</li>
+    <li><strong>Line 21:</strong> Constructor accepts service configuration dictionary</li>
+    <li><strong>Lines 22-24:</strong> Extract notification settings:
+        <ul>
+            <li><code>self.email_config</code> - SMTP settings, recipients, credentials</li>
+            <li><code>self.syslog_config</code> - Syslog server, facility settings</li>
+            <li><code>.get()</code> with empty dict defaults prevents KeyError if config missing</li>
+        </ul>
+    </li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 26-59: send_email Method</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>def send_email(self, subject: str, message: str, recipients: List[str] = None):
+    """Send email notification"""
+    if not self.email_config.get('enabled', False):
+        return
+        
+    try:
+        recipients = recipients or self.email_config.get('recipients', [])
+        if not recipients:
+            return
+            
+        msg = MIMEMultipart()
+        msg['From'] = self.email_config['smtp_user']
+        msg['To'] = ', '.join(recipients)
+        msg['Subject'] = f"[SASA-Software] {subject}"
+        
+        body = f"""
+        Time: {datetime.utcnow().isoformat()}Z
+        Service: {self.config.get('service_name', 'Unknown')}
+        
+        {message}
+        """
+        
+        msg.attach(MIMEText(body, 'plain'))
+        
+        with smtplib.SMTP(self.email_config['smtp_server'], 
+                         self.email_config['smtp_port']) as server:
+            if self.email_config.get('use_tls', True):
+                server.starttls()
+            server.login(self.email_config['smtp_user'], 
+                        self.email_config['smtp_password'])
+            server.sendmail(self.email_config['smtp_user'], recipients, msg.as_string())
+            
+        logging.info(f"Email notification sent: {subject}")
+        
+    except Exception as e:
+        logging.error(f"Failed to send email notification: {e}")</code></pre>
+
+<p><strong>Detailed Breakdown:</strong></p>
+<ul>
+    <li><strong>Lines 28-29:</strong> Early return if email notifications disabled</li>
+    <li><strong>Lines 32-34:</strong> Recipient handling:
+        <ul>
+            <li>Use provided recipients or default from config</li>
+            <li>Skip if no recipients configured</li>
+        </ul>
+    </li>
+    <li><strong>Lines 36-39:</strong> Email headers:
+        <ul>
+            <li><code>From</code> - SMTP authenticated user</li>
+            <li><code>To</code> - Comma-separated recipient list</li>
+            <li><code>Subject</code> - Prefixed with [SASA-Software] for filtering</li>
+        </ul>
+    </li>
+    <li><strong>Lines 41-46:</strong> Email body composition:
+        <ul>
+            <li>UTC timestamp for timezone-independent logging</li>
+            <li>Service name identification</li>
+            <li>Custom message content</li>
+        </ul>
+    </li>
+    <li><strong>Lines 48-55:</strong> SMTP sending:
+        <ul>
+            <li><code>with</code> statement ensures connection cleanup</li>
+            <li>TLS encryption (STARTTLS) for secure transmission</li>
+            <li>SMTP authentication with username/password</li>
+        </ul>
+    </li>
+    <li><strong>Lines 57-59:</strong> Exception handling logs errors without crashing</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 61-96: send_syslog Method</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>def send_syslog(self, level: str, message: str):
+    """Send syslog notification"""
+    if not self.syslog_config.get('enabled', False):
+        return
+    
+    if not HAS_SYSLOG:
+        logging.warning("Syslog not available on this platform (Windows)")
+        self._send_windows_event_log(level, message)
+        return
+        
+    try:
+        # Map string levels to syslog levels
+        level_map = {
+            'debug': syslog.LOG_DEBUG,
+            'info': syslog.LOG_INFO,
+            'warning': syslog.LOG_WARNING,
+            'error': syslog.LOG_ERR,
+            'critical': syslog.LOG_CRIT
+        }
+        
+        syslog_level = level_map.get(level.lower(), syslog.LOG_INFO)
+        facility = getattr(syslog, self.syslog_config.get('facility', 'LOG_USER'))
+        
+        syslog.openlog(
+            ident=self.config.get('service_name', 'sasa-software'),
+            logoption=syslog.LOG_PID,
+            facility=facility
+        )
+        
+        syslog.syslog(syslog_level, message)
+        syslog.closelog()
+        
+        logging.info(f"Syslog notification sent: {level} - {message}")
+        
+    except Exception as e:
+        logging.error(f"Failed to send syslog notification: {e}")</code></pre>
+
+<p><strong>Detailed Breakdown:</strong></p>
+<ul>
+    <li><strong>Lines 63-64:</strong> Skip if syslog disabled</li>
+    <li><strong>Lines 66-69:</strong> <strong>CRITICAL:</strong> Platform detection
+        <ul>
+            <li>If Windows (no syslog), call Windows Event Log fallback</li>
+            <li>Ensures cross-platform compatibility</li>
+        </ul>
+    </li>
+    <li><strong>Lines 73-79:</strong> Severity level mapping:
+        <ul>
+            <li>Converts string levels to syslog constants</li>
+            <li>Defaults to LOG_INFO if level unrecognized</li>
+        </ul>
+    </li>
+    <li><strong>Line 82:</strong> Facility configuration:
+        <ul>
+            <li>LOG_USER (default) - User-level messages</li>
+            <li>Other options: LOG_LOCAL0-7 for custom facilities</li>
+        </ul>
+    </li>
+    <li><strong>Lines 84-88:</strong> Syslog session:
+        <ul>
+            <li><code>ident</code> - Process identifier in logs</li>
+            <li><code>LOG_PID</code> - Include process ID</li>
+            <li><code>facility</code> - Logging category</li>
+        </ul>
+    </li>
+    <li><strong>Lines 90-91:</strong> Send message and close connection</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 98-117: _send_windows_event_log Method</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>def _send_windows_event_log(self, level: str, message: str):
+    """Send notification to Windows Event Log as fallback"""
+    try:
+        import subprocess
+        
+        # Use PowerShell to write to Windows Event Log
+        ps_command = f'''
+        if (-not (Get-EventLog -LogName Application -Source "SASA-Software" -ErrorAction SilentlyContinue)) {{
+            New-EventLog -LogName Application -Source "SASA-Software"
+        }}
+        Write-EventLog -LogName Application -Source "SASA-Software" -EventId 1001 -EntryType Information -Message "{message}"
+        '''
+        
+        subprocess.run(["powershell", "-Command", ps_command], 
+                     capture_output=True, check=False)
+        
+        logging.info(f"Windows Event Log notification sent: {level} - {message}")
+        
+    except Exception as e:
+        logging.error(f"Failed to send Windows Event Log notification: {e}")</code></pre>
+
+<p><strong>Detailed Breakdown:</strong></p>
+<ul>
+    <li><strong>Line 98:</strong> Private method (underscore prefix) for Windows-specific logging</li>
+    <li><strong>Lines 105-110:</strong> PowerShell script:
+        <ul>
+            <li>Checks if "SASA-Software" event source exists</li>
+            <li>Creates source if missing</li>
+            <li>Writes event with ID 1001 to Application log</li>
+        </ul>
+    </li>
+    <li><strong>Lines 112-113:</strong> Execute PowerShell:
+        <ul>
+            <li><code>subprocess.run()</code> - Runs PowerShell command</li>
+            <li><code>check=False</code> - Don't raise exception on error</li>
+        </ul>
+    </li>
+    <li><strong>Note:</strong> Requires Windows with PowerShell installed</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 119-129: notify_error Method</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>def notify_error(self, error_message: str, exception: Exception = None):
+    """Send error notifications via all configured methods"""
+    full_message = error_message
+    if exception:
+        full_message += f"\nException: {str(exception)}"
+        
+    # Send email notification
+    self.send_email("System Error", full_message)
+    
+    # Send syslog notification
+    self.send_syslog("error", full_message)</code></pre>
+
+<p><strong>Detailed Breakdown:</strong></p>
+<ul>
+    <li><strong>Line 119:</strong> High-level error notification method</li>
+    <li><strong>Lines 121-123:</strong> Message composition:
+        <ul>
+            <li>Include exception details if provided</li>
+            <li>Creates comprehensive error report</li>
+        </ul>
+    </li>
+    <li><strong>Lines 126-129:</strong> Multi-channel notification:
+        <ul>
+            <li>Sends to email for human review</li>
+            <li>Sends to syslog for centralized logging</li>
+            <li>Both channels run regardless of individual failures</li>
+        </ul>
+    </li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 132-147: ConfigManager Class</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>class ConfigManager:
+    """Manages configuration loading and validation"""
+    
+    @staticmethod
+    def load_config(config_path: str) -> dict:
+        """Load configuration from YAML file"""
+        try:
+            with open(config_path, 'r', encoding='utf-8') as file:
+                config = yaml.safe_load(file)
+            
+            # Load environment variables
+            config = ConfigManager._load_env_variables(config)
+            
+            return config
+        except Exception as e:
+            raise Exception(f"Failed to load configuration: {e}")</code></pre>
+
+<p><strong>Detailed Breakdown:</strong></p>
+<ul>
+    <li><strong>Line 132:</strong> Configuration management class</li>
+    <li><strong>Line 135:</strong> <code>@staticmethod</code> - No instance required</li>
+    <li><strong>Lines 138-140:</strong> YAML loading:
+        <ul>
+            <li><code>encoding='utf-8'</code> - Supports international characters</li>
+            <li><code>yaml.safe_load()</code> - Secure parser (prevents code injection)</li>
+        </ul>
+    </li>
+    <li><strong>Line 143:</strong> Environment variable override:
+        <ul>
+            <li>Allows runtime configuration without editing YAML</li>
+            <li>Critical for secrets management in containers</li>
+        </ul>
+    </li>
+    <li><strong>Lines 146-147:</strong> Exception wrapping provides context</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 149-163: _load_env_variables Method</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>@staticmethod
+def _load_env_variables(config: dict) -> dict:
+    """Load environment variables and override config values"""
+    # JWT Secret
+    jwt_secret = os.getenv('JWT_SECRET')
+    if jwt_secret:
+        config['jwt']['secret'] = jwt_secret
+    
+    # Email configuration
+    if 'notifications' in config and 'email' in config['notifications']:
+        email_config = config['notifications']['email']
+        email_config['smtp_password'] = os.getenv('SMTP_PASSWORD', 
+                                                   email_config.get('smtp_password', ''))
+        email_config['smtp_user'] = os.getenv('SMTP_USER', 
+                                              email_config.get('smtp_user', ''))
+    
+    return config</code></pre>
+
+<p><strong>Detailed Breakdown:</strong></p>
+<ul>
+    <li><strong>Line 149:</strong> Private static method for environment processing</li>
+    <li><strong>Lines 152-155:</strong> JWT secret override:
+        <ul>
+            <li><code>os.getenv('JWT_SECRET')</code> - Read from environment</li>
+            <li>Only overrides if environment variable exists</li>
+            <li><strong>Critical:</strong> Keeps secrets out of config files</li>
+        </ul>
+    </li>
+    <li><strong>Lines 157-163:</strong> Email credential override:
+        <ul>
+            <li>SMTP password from environment (never commit passwords)</li>
+            <li>SMTP username from environment</li>
+            <li>Falls back to config file values if env vars missing</li>
+        </ul>
+    </li>
+    <li><strong>Security Best Practice:</strong> Secrets in environment, not files</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 166-206: setup_logging Function</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>def setup_logging(service_name: str, log_level: str = "INFO", log_file: str = None):
+    """Setup logging configuration for the service"""
+    
+    # Create logs directory if it doesn't exist
+    if log_file:
+        os.makedirs(os.path.dirname(log_file), exist_ok=True)
+    
+    # Configure logging
+    log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    
+    # Create console handler with UTF-8 encoding for Windows
+    console_handler = logging.StreamHandler()
+    console_formatter = logging.Formatter(log_format)
+    console_handler.setFormatter(console_formatter)
+    
+    # Try to set UTF-8 encoding for console on Windows
+    if hasattr(console_handler.stream, 'reconfigure'):
+        try:
+            console_handler.stream.reconfigure(encoding='utf-8', errors='replace')
+        except:
+            pass
+    
+    handlers = [console_handler]
+    
+    if log_file:
+        file_handler = logging.FileHandler(log_file, encoding='utf-8')
+        file_formatter = logging.Formatter(log_format)
+        file_handler.setFormatter(file_formatter)
+        handlers.append(file_handler)
+    
+    # Clear existing handlers and configure new ones
+    logging.basicConfig(
+        level=getattr(logging, log_level.upper()),
+        format=log_format,
+        handlers=handlers,
+        force=True  # Force reconfiguration
+    )
+    
+    # Set service name in logger
+    logger = logging.getLogger(service_name)
+    return logger</code></pre>
+
+<p><strong>Detailed Breakdown:</strong></p>
+<ul>
+    <li><strong>Line 166:</strong> Module-level function for logging initialization</li>
+    <li><strong>Lines 169-171:</strong> Directory creation:
+        <ul>
+            <li><code>exist_ok=True</code> - Don't fail if directory exists</li>
+            <li>Creates parent directories as needed</li>
+        </ul>
+    </li>
+    <li><strong>Line 174:</strong> Standard log format with timestamp, logger name, level, message</li>
+    <li><strong>Lines 177-187:</strong> Console handler setup:
+        <ul>
+            <li>UTF-8 encoding for international characters</li>
+            <li><code>errors='replace'</code> - Replace unencodable characters</li>
+            <li>Try/except for older Python versions</li>
+        </ul>
+    </li>
+    <li><strong>Lines 191-195:</strong> File handler (optional):
+        <ul>
+            <li>UTF-8 encoding for log files</li>
+            <li>Same format as console</li>
+            <li>Added to handlers list</li>
+        </ul>
+    </li>
+    <li><strong>Lines 198-203:</strong> Logging configuration:
+        <ul>
+            <li><code>force=True</code> - Replaces any existing config</li>
+            <li>Converts string level to logging constant</li>
+        </ul>
+    </li>
+    <li><strong>Lines 205-206:</strong> Returns configured logger for service</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 209-214: sanitize_filename Function</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>def sanitize_filename(filename: str) -> str:
+    """Sanitize filename by replacing unsafe characters with underscores"""
+    import re
+    # Replace any character that is not alphanumeric, dot, hyphen, or underscore
+    sanitized = re.sub(r'[^\w\-_\.]', '_', filename)
+    return sanitized</code></pre>
+
+<p><strong>Detailed Breakdown:</strong></p>
+<ul>
+    <li><strong>Line 209:</strong> Utility function for safe filenames</li>
+    <li><strong>Line 213:</strong> Regex pattern:
+        <ul>
+            <li><code>[^\w\-_\.]</code> - Matches anything NOT alphanumeric, dash, underscore, or dot</li>
+            <li>Replaces unsafe characters with underscore</li>
+        </ul>
+    </li>
+    <li><strong>Purpose:</strong> Prevents path traversal and OS-specific filename issues</li>
+    <li><strong>Example:</strong> <code>"my file!.txt"</code> → <code>"my_file_.txt"</code></li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">Lines 217-229: get_file_hash Function</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>def get_file_hash(file_path: str) -> str:
+    """Calculate SHA256 hash of a file"""
+    import hashlib
+    
+    hash_sha256 = hashlib.sha256()
+    try:
+        with open(file_path, "rb") as f:
+            for chunk in iter(lambda: f.read(4096), b""):
+                hash_sha256.update(chunk)
+        return hash_sha256.hexdigest()
+    except Exception as e:
+        logging.error(f"Failed to calculate hash for {file_path}: {e}")
+        return ""</code></pre>
+
+<p><strong>Detailed Breakdown:</strong></p>
+<ul>
+    <li><strong>Line 217:</strong> Calculates cryptographic hash for file integrity</li>
+    <li><strong>Line 221:</strong> Initialize SHA-256 hasher</li>
+    <li><strong>Line 224:</strong> Open file in binary mode</li>
+    <li><strong>Line 225:</strong> Chunked reading:
+        <ul>
+            <li>Reads 4KB chunks to handle large files efficiently</li>
+            <li><code>iter(lambda: f.read(4096), b"")</code> - Continues until empty bytes</li>
+        </ul>
+    </li>
+    <li><strong>Line 226:</strong> Update hash with each chunk</li>
+    <li><strong>Line 227:</strong> Return hexadecimal digest (64 character string)</li>
+    <li><strong>Usage:</strong> File integrity verification, duplicate detection</li>
+</ul>
+</div>
+
+<h4>📊 Module Usage Summary:</h4>
+<div style="background: #d4edda; padding: 15px; border-radius: 5px; border-left: 5px solid #28a745;">
+<p><strong>Watcher Service Uses:</strong></p>
+<ul>
+    <li><code>ConfigManager.load_config()</code> - Load watcher-service/config.yaml</li>
+    <li><code>setup_logging()</code> - Initialize watcher logging</li>
+    <li><code>NotificationHandler</code> - Alert on file processing errors</li>
+    <li><code>sanitize_filename()</code> - Clean filenames before processing</li>
+    <li><code>get_file_hash()</code> - Generate file checksums</li>
+</ul>
+
+<p><strong>Logger Service Uses:</strong></p>
+<ul>
+    <li><code>ConfigManager.load_config()</code> - Load logger-service/config.yaml</li>
+    <li><code>setup_logging()</code> - Initialize logger logging</li>
+    <li><code>NotificationHandler</code> - Alert on logging errors</li>
+    <li><code>sanitize_filename()</code> - Clean log filenames</li>
+</ul>
+</div>
+
+<h4>🎯 Key Design Patterns:</h4>
+<div style="background: #e8f4fd; padding: 15px; border-radius: 5px; border-left: 5px solid #0066cc;">
+<ul>
+    <li><strong>Static Methods:</strong> ConfigManager uses static methods (no state needed)</li>
+    <li><strong>Platform Abstraction:</strong> Automatic Windows/Unix detection and handling</li>
+    <li><strong>Graceful Degradation:</strong> Features fail gracefully (log errors, continue)</li>
+    <li><strong>Configuration Hierarchy:</strong> Environment variables override YAML files</li>
+    <li><strong>Security by Default:</strong> UTF-8 encoding, safe filename handling</li>
+    <li><strong>Single Responsibility:</strong> Each class/function has one clear purpose</li>
+</ul>
+</div>
+
+</div>
+
+<!-- HEBREW SECTION -->
+<div class="hebrew-section">
+<h3>🎯 מטרה:</h3>
+<p>מודול זה מספק פונקציות ומחלקות עזר חיוניות המשותפות בין שני השירותים. הוא מטפל בטעינת הגדרות, התראות אימייל ו-syslog, הגדרת רישום ופעולות קבצים. גישה ריכוזית זו מבטיחה התנהגות עקבית ומפחיתה כפילות קוד.</p>
+
+<h4>📋 סקירת מבנה הקובץ:</h4>
+<div style="background: #e8f4fd; padding: 15px; border-radius: 5px; border-right: 5px solid #0066cc;">
+<strong>סך שורות:</strong> 229 שורות<br>
+<strong>מחלקות:</strong> ConfigManager, NotificationHandler<br>
+<strong>פונקציות:</strong> setup_logging(), sanitize_filename(), get_file_hash()<br>
+<strong>תלויות:</strong> PyYAML, smtplib, syslog (Unix), logging<br>
+<strong>חוצה-פלטפורמות:</strong> מטפל בהבדלים Windows/Unix
+</div>
+
+<h4>🔍 ניתוח רכיבים מפורט:</h4>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">שורות 1-16: ייבואים וזיהוי פלטפורמה</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>import os
+import logging
+import smtplib
+try:
+    import syslog
+    HAS_SYSLOG = True
+except ImportError:
+    # syslog is not available on Windows
+    HAS_SYSLOG = False
+    syslog = None
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from typing import Optional, List
+from datetime import datetime
+import yaml</code></pre>
+
+<p><strong>הסבר:</strong></p>
+<ul>
+    <li><strong>שורות 1-3:</strong> ספריות Python ליבה לפעולות OS, רישום, אימייל</li>
+    <li><strong>שורות 4-10:</strong> <strong>קריטי:</strong> טיפול חוצה-פלטפורמות ב-syslog
+        <ul>
+            <li>מודול <code>syslog</code> זמין רק במערכות Unix/Linux</li>
+            <li>דגל <code>HAS_SYSLOG</code> מזהה יכולת פלטפורמה</li>
+            <li>מערכות Windows ישתמשו ב-Event Log כחלופה (מיושם מאוחר יותר)</li>
+        </ul>
+    </li>
+    <li><strong>שורות 11-15:</strong> הרכבת אימייל, רמזי טיפוס, datetime, ניתוח YAML</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">שורות 18-24: מחלקת NotificationHandler - בנאי</h5>
+<pre style="background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow-x: auto;">
+<code>class NotificationHandler:
+    """Handles various notification methods for errors and alerts"""
+    
+    def __init__(self, config: dict):
+        self.config = config
+        self.email_config = config.get('notifications', {}).get('email', {})
+        self.syslog_config = config.get('notifications', {}).get('syslog', {})</code></pre>
+
+<p><strong>פירוט מפורט:</strong></p>
+<ul>
+    <li><strong>שורה 18:</strong> מחלקה לניהול התראות (אימייל, syslog)</li>
+    <li><strong>שורה 21:</strong> הבנאי מקבל מילון הגדרות שירות</li>
+    <li><strong>שורות 22-24:</strong> חילוץ הגדרות התראות:
+        <ul>
+            <li><code>self.email_config</code> - הגדרות SMTP, נמענים, אישורים</li>
+            <li><code>self.syslog_config</code> - שרת Syslog, הגדרות facility</li>
+            <li><code>.get()</code> עם ברירת מחדל של dict ריק מונע KeyError אם הגדרה חסרה</li>
+        </ul>
+    </li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">שורות 26-59: מתודת send_email</h5>
+<p><strong>מתודה זו שולחת התראות אימייל עם חיבור SMTP מאובטח. היא בונה הודעת אימייל עם כותרות, גוף והטבעת חותמת זמן, ושולחת אותה דרך שרת SMTP מוגדר.</strong></p>
+<ul>
+    <li><strong>שורות 28-29:</strong> החזרה מוקדמת אם התראות אימייל מושבתות</li>
+    <li><strong>שורות 32-34:</strong> טיפול בנמענים מרשימה או מהגדרות</li>
+    <li><strong>שורות 36-46:</strong> בניית כותרות ותוכן האימייל</li>
+    <li><strong>שורות 48-55:</strong> שליחת SMTP עם הצפנת TLS</li>
+    <li><strong>שורות 57-59:</strong> טיפול בחריגות מרשם שגיאות מבלי לקרוס</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">שורות 61-96: מתודת send_syslog</h5>
+<p><strong>מתודה זו שולחת התראות לשירות syslog של המערכת (Unix/Linux) או Windows Event Log כחלופה. היא ממפה רמות חומרה ומשתמשת ב-facility המוגדר.</strong></p>
+<ul>
+    <li><strong>שורות 63-64:</strong> דילוג אם syslog מושבת</li>
+    <li><strong>שורות 66-69:</strong> <strong>קריטי:</strong> זיהוי פלטפורמה וחלופה ל-Windows</li>
+    <li><strong>שורות 73-79:</strong> מיפוי רמות חומרה לקבועי syslog</li>
+    <li><strong>שורות 84-91:</strong> פתיחה, שליחה וסגירה של חיבור syslog</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">שורות 98-117: מתודת _send_windows_event_log</h5>
+<p><strong>מתודה פרטית לשליחת התראות ל-Windows Event Log באמצעות PowerShell. זוהי חלופה ל-syslog במערכות Windows.</strong></p>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">שורות 119-129: מתודת notify_error</h5>
+<p><strong>מתודת נוחות ברמה גבוהה שולחת התראות שגיאה דרך כל הערוצים המוגדרים (אימייל ו-syslog).</strong></p>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">שורות 132-147: מחלקת ConfigManager</h5>
+<p><strong>מחלקה זו מטפלת בטעינה ואימות של קובצי הגדרות YAML. היא משתמשת במתודות סטטיות ומאפשרת עקיפת הגדרות באמצעות משתני סביבה.</strong></p>
+<ul>
+    <li><strong>שורות 138-140:</strong> טעינת YAML מאובטחת עם קידוד UTF-8</li>
+    <li><strong>שורה 143:</strong> עקיפת משתני סביבה לסודות וקונפיגורציה דינמית</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">שורות 149-163: מתודת _load_env_variables</h5>
+<p><strong>מטפלת בעקיפת משתני סביבה, במיוחד לסודות JWT ואישורי SMTP. זו שיטת עבודה מומלצת לאבטחה - סודות במשתני סביבה, לא בקבצים.</strong></p>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">שורות 166-206: פונקציית setup_logging</h5>
+<p><strong>מגדירה תצורת רישום למערכת עם תמיכה בקונסול וקבצים. מטפלת בקידוד UTF-8 ל-Windows ויוצרת תיקיות לוג אוטומטית.</strong></p>
+<ul>
+    <li><strong>שורות 177-187:</strong> מטפל קונסול עם קידוד UTF-8 לתווים בינלאומיים</li>
+    <li><strong>שורות 191-195:</strong> מטפל קובץ אופציונלי לשמירת לוגים</li>
+</ul>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">שורות 209-214: פונקציית sanitize_filename</h5>
+<p><strong>מנקה שמות קבצים על ידי החלפת תווים לא בטוחים בקווים תחתונים. מונעת מעבר נתיבים ובעיות ספציפיות למערכת ההפעלה.</strong></p>
+</div>
+
+<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+<h5 style="color: #9b59b6;">שורות 217-229: פונקציית get_file_hash</h5>
+<p><strong>מחשבת hash קריפטוגרפי SHA-256 לקובץ. קריאה מבוססת chunks לטיפול יעיל בקבצים גדולים. משמשת לאימות תקינות וזיהוי כפילויות.</strong></p>
+</div>
+
+<h4>📊 סיכום שימוש במודול:</h4>
+<div style="background: #d4edda; padding: 15px; border-radius: 5px; border-right: 5px solid #28a745;">
+<p><strong>שירות צפייה משתמש ב:</strong></p>
+<ul>
+    <li><code>ConfigManager.load_config()</code> - טעינת watcher-service/config.yaml</li>
+    <li><code>setup_logging()</code> - אתחול רישום צפייה</li>
+    <li><code>NotificationHandler</code> - התראה על שגיאות עיבוד קבצים</li>
+    <li><code>sanitize_filename()</code> - ניקוי שמות קבצים לפני עיבוד</li>
+    <li><code>get_file_hash()</code> - יצירת checksums של קבצים</li>
+</ul>
+
+<p><strong>שירות רישום משתמש ב:</strong></p>
+<ul>
+    <li><code>ConfigManager.load_config()</code> - טעינת logger-service/config.yaml</li>
+    <li><code>setup_logging()</code> - אתחול רישום רישום</li>
+    <li><code>NotificationHandler</code> - התראה על שגיאות רישום</li>
+    <li><code>sanitize_filename()</code> - ניקוי שמות קבצי לוג</li>
+</ul>
+</div>
+
+<h4>🎯 דפוסי עיצוב מרכזיים:</h4>
+<div style="background: #e8f4fd; padding: 15px; border-radius: 5px; border-right: 5px solid #0066cc;">
+<ul>
+    <li><strong>מתודות סטטיות:</strong> ConfigManager משתמש במתודות סטטיות (אין צורך במצב)</li>
+    <li><strong>הפשטת פלטפורמה:</strong> זיהוי וטיפול אוטומטי ב-Windows/Unix</li>
+    <li><strong>הידרדרות חיננית:</strong> תכונות נכשלות בצורה חיננית (רושמות שגיאות, ממשיכות)</li>
+    <li><strong>היררכיית קונפיגורציה:</strong> משתני סביבה עוקפים קבצי YAML</li>
+    <li><strong>אבטחה כברירת מחדל:</strong> קידוד UTF-8, טיפול בטוח בשמות קבצים</li>
+    <li><strong>אחריות בודדת:</strong> לכל מחלקה/פונקציה יש מטרה ברורה אחת</li>
+</ul>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- SECTION 3.2 CONCLUSION -->
+<div class="page-break">
+<h2 style="border-bottom: 2px solid #9b59b6; padding-bottom: 10px; color: #2c3e50;">
+    🎓 Section 3.2 Summary
+</h2>
+
+<div class="bilingual-container">
+
+<!-- ENGLISH SECTION -->
+<div class="english-section">
+<h3>🎯 What We Covered:</h3>
+<p>We completed an in-depth analysis of the <code>shared/</code> directory, which contains the foundational utilities used by both microservices.</p>
+
+<h4>📊 Files Analyzed:</h4>
+<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+    <thead style="background: #9b59b6; color: white;">
+        <tr>
+            <th style="padding: 12px; border: 1px solid #ddd;">File</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">Lines</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">Classes/Functions</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">Importance</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>jwt_manager.py</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">49</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">JWTManager (4 methods)</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">⭐⭐⭐⭐⭐</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>utils.py</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">229</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">2 classes + 3 functions</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">⭐⭐⭐⭐⭐</td>
+        </tr>
+    </tbody>
+</table>
+
+<h4>🔑 Key Takeaways:</h4>
+<ol>
+    <li><strong>JWT Authentication</strong> provides secure inter-service communication
+        <ul>
+            <li>HS256 algorithm with shared secret</li>
+            <li>5-minute token expiration prevents replay attacks</li>
+            <li>Issuer validation ensures authorized services only</li>
+        </ul>
+    </li>
+    <li><strong>Configuration Management</strong> is flexible and secure
+        <ul>
+            <li>YAML files for declarative configuration</li>
+            <li>Environment variable overrides for secrets</li>
+            <li>Automatic UTF-8 encoding support</li>
+        </ul>
+    </li>
+    <li><strong>Notification System</strong> is multi-channel and robust
+        <ul>
+            <li>Email notifications for human review</li>
+            <li>Syslog/Event Log for centralized monitoring</li>
+            <li>Cross-platform with automatic fallbacks</li>
+        </ul>
+    </li>
+    <li><strong>Logging Setup</strong> is comprehensive
+        <ul>
+            <li>Console and file output</li>
+            <li>UTF-8 encoding for international support</li>
+            <li>Configurable log levels</li>
+        </ul>
+    </li>
+    <li><strong>File Utilities</strong> ensure safety and integrity
+        <ul>
+            <li>Filename sanitization prevents path traversal</li>
+            <li>SHA-256 hashing for integrity verification</li>
+            <li>Chunked reading for large files</li>
+        </ul>
+    </li>
+</ol>
+
+<h4>🎓 Skills You've Learned:</h4>
+<div style="background: #d4edda; padding: 15px; border-radius: 5px; border-left: 5px solid #28a745;">
+<ul>
+    <li>✅ JWT token generation and validation for API security</li>
+    <li>✅ Cross-platform development techniques (Windows/Unix)</li>
+    <li>✅ Configuration management best practices</li>
+    <li>✅ Multi-channel notification systems</li>
+    <li>✅ Secure filename handling and file integrity checking</li>
+    <li>✅ Python logging configuration and UTF-8 encoding</li>
+    <li>✅ Environment variable management for secrets</li>
+</ul>
+</div>
+
+<h4>📌 Next Section Preview:</h4>
+<p>Section 3 is now complete! Section 4 will cover the watcher-service in detail, analyzing every line of code in the file monitoring system.</p>
+
+</div>
+
+<!-- HEBREW SECTION -->
+<div class="hebrew-section">
+<h3>🎯 מה כיסינו:</h3>
+<p>השלמנו ניתוח מעמיק של תיקיית <code>shared/</code>, המכילה את כלי העזר היסודיים המשמשים את שני המיקרו-שירותים.</p>
+
+<h4>📊 קבצים שנותחו:</h4>
+<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+    <thead style="background: #9b59b6; color: white;">
+        <tr>
+            <th style="padding: 12px; border: 1px solid #ddd;">קובץ</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">שורות</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">מחלקות/פונקציות</th>
+            <th style="padding: 12px; border: 1px solid #ddd;">חשיבות</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>jwt_manager.py</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">49</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">JWTManager (4 מתודות)</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">⭐⭐⭐⭐⭐</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>utils.py</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;">229</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">2 מחלקות + 3 פונקציות</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">⭐⭐⭐⭐⭐</td>
+        </tr>
+    </tbody>
+</table>
+
+<h4>🔑 נקודות מפתח:</h4>
+<ol>
+    <li><strong>אימות JWT</strong> מספק תקשורת בין-שירותית מאובטחת
+        <ul>
+            <li>אלגוריתם HS256 עם סוד משותף</li>
+            <li>תפוגת אסימון של 5 דקות מונעת התקפות replay</li>
+            <li>אימות מנפיק מבטיח שירותים מורשים בלבד</li>
+        </ul>
+    </li>
+    <li><strong>ניהול הגדרות</strong> גמיש ומאובטח
+        <ul>
+            <li>קבצי YAML להגדרות הצהרתיות</li>
+            <li>עקיפות משתני סביבה לסודות</li>
+            <li>תמיכה אוטומטית בקידוד UTF-8</li>
+        </ul>
+    </li>
+    <li><strong>מערכת התראות</strong> רב-ערוצית וחזקה
+        <ul>
+            <li>התראות אימייל לבדיקה אנושית</li>
+            <li>Syslog/Event Log לניטור מרכזי</li>
+            <li>חוצה-פלטפורמות עם חלופות אוטומטיות</li>
+        </ul>
+    </li>
+    <li><strong>הגדרת רישום</strong> מקיפה
+        <ul>
+            <li>פלט קונסול וקובץ</li>
+            <li>קידוד UTF-8 לתמיכה בינלאומית</li>
+            <li>רמות לוג הניתנות להגדרה</li>
+        </ul>
+    </li>
+    <li><strong>כלי קבצים</strong> מבטיחים בטיחות ותקינות
+        <ul>
+            <li>ניקוי שמות קבצים מונע מעבר נתיבים</li>
+            <li>hashing SHA-256 לאימות תקינות</li>
+            <li>קריאה מבוססת chunks לקבצים גדולים</li>
+        </ul>
+    </li>
+</ol>
+
+<h4>🎓 מיומנויות שלמדת:</h4>
+<div style="background: #d4edda; padding: 15px; border-radius: 5px; border-right: 5px solid #28a745;">
+<ul>
+    <li>✅ יצירה ואימות אסימוני JWT לאבטחת API</li>
+    <li>✅ טכניקות פיתוח חוצות-פלטפורמות (Windows/Unix)</li>
+    <li>✅ שיטות עבודה מומלצות לניהול הגדרות</li>
+    <li>✅ מערכות התראה רב-ערוציות</li>
+    <li>✅ טיפול בטוח בשמות קבצים ובדיקת תקינות קבצים</li>
+    <li>✅ הגדרת רישום Python וקידוד UTF-8</li>
+    <li>✅ ניהול משתני סביבה לסודות</li>
+</ul>
+</div>
+
+<h4>📌 תצוגה מקדימה של הסעיף הבא:</h4>
+<p>סעיף 3 הושלם כעת! סעיף 4 יכסה את watcher-service בפירוט, וינתח כל שורת קוד במערכת ניטור הקבצים.</p>
 
 </div>
 

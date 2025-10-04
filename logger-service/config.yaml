@@ -47,7 +47,7 @@ service_name: logger-service
 storage:
   compress_old_logs: true
   file_retention_days: 30
-  logs_directory: ./logs
+  logs_directory: ../logs
   max_log_files: 1000
 validation:
   max_file_size_mb: 1000

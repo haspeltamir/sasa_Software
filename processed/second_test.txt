@@ -1,3 +1,0 @@
-Another test file with different content.
-File #2 - Testing continuous monitoring.
-System should detect this automatically!

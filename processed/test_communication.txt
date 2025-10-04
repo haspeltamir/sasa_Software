@@ -1,3 +1,0 @@
-This is a test file to verify the communication between Watcher and Logger services.
-Created at: 2025-09-30 20:40:00
-Content: Testing microservices communication with JWT authentication.

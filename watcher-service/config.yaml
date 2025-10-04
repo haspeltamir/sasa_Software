@@ -9,9 +9,9 @@ jwt:
 
 # Directory Configuration
 directories:
-  watched: "./watched"
-  processed: "./processed"
-  temp: "./temp"
+  watched: "../watched"
+  processed: "../processed"
+  temp: "../temp"
 
 # File Processing Configuration
 processing:

@@ -2225,6 +2225,7 @@ sasa_Software/
 <code>version: '3.8'
 
 services:</code></pre>
+
 <p><strong>Explanation:</strong></p>
 <ul>
     <li><code>version: '3.8'</code> - Specifies Docker Compose file format version 3.8</li>
@@ -2501,6 +2502,7 @@ services:</code></pre>
 <code>version: '3.8'
 
 services:</code></pre>
+
 <p><strong>הסבר:</strong></p>
 <ul>
     <li><code>version: '3.8'</code> - מציין תבנית קובץ Docker Compose גרסה 3.8</li>
@@ -3304,6 +3306,7 @@ import subprocess
 import time
 import requests
 from pathlib import Path</code></pre>
+
 <p><strong>Line-by-Line Explanation:</strong></p>
 <ul>
     <li><strong>Line 1:</strong> Shebang - makes script executable on Unix systems</li>
@@ -3429,11 +3432,12 @@ from pathlib import Path</code></pre>
         return False
 
 def restart_services(self):
-    """Restart all services"""
-    print("🔄 Restarting SASA Software services...")
-    self.stop_services()
-    time.sleep(2)
-    return self.start_services()</code></pre>
+"""Restart all services"""
+print("🔄 Restarting SASA Software services...")
+self.stop_services()
+time.sleep(2)
+return self.start_services()</code></pre>
+
 <p><strong>Key Points:</strong></p>
 <ul>
     <li><code>stop_services()</code> - Executes <code>docker-compose down</code></li>
@@ -3537,9 +3541,10 @@ Processed   : 23 files
 Logs        : 45 files
 
 🔧 Service Status:
-logger         : ✅ Running
+logger : ✅ Running
 watcher-config : ✅ Running
-logger-config  : ✅ Running</pre>
+logger-config : ✅ Running</pre>
+
 </div>
 
 <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
@@ -3609,8 +3614,9 @@ logger-config  : ✅ Running</pre>
     elif args.command == 'test':
         manager.test_system()
 
-if __name__ == "__main__":
-    main()</code></pre>
+if **name** == "**main**":
+main()</code></pre>
+
 <p><strong>Argument Parser Configuration:</strong></p>
 <ul>
     <li><strong>Line 189:</strong> Creates argument parser with description</li>
@@ -3654,9 +3660,9 @@ Processed   : 23 files
 Logs        : 45 files
 
 🔧 Service Status:
-logger         : ✅ Running
+logger : ✅ Running
 watcher-config : ✅ Running
-logger-config  : ✅ Running</pre>
+logger-config : ✅ Running</pre>
 
 <h5>Follow Logs:</h5>
 <pre>$ python manage.py logs --follow
@@ -3891,15 +3897,17 @@ logger-config  : ✅ Running</pre>
 echo "🚀 Starting SASA Software Microservices..."
 
 # Check if Docker is installed
+
 if ! command -v docker &> /dev/null; then
-    echo "❌ Docker is not installed. Please install Docker first."
-    exit 1
+echo "❌ Docker is not installed. Please install Docker first."
+exit 1
 fi
 
 if ! command -v docker-compose &> /dev/null; then
-    echo "❌ Docker Compose is not installed. Please install Docker Compose first."
-    exit 1
+echo "❌ Docker Compose is not installed. Please install Docker Compose first."
+exit 1
 fi</code></pre>
+
 <p><strong>Explanation:</strong></p>
 <ul>
     <li><code>#!/bin/bash</code> - Bash shebang for script execution</li>
@@ -3932,8 +3940,10 @@ echo "🛑 Stopping existing containers..."
 docker-compose down
 
 # Build and start services
+
 echo "🔨 Building and starting services..."
 docker-compose up --build -d</code></pre>
+
 <p><strong>Commands:</strong></p>
 <ul>
     <li><code>docker-compose down</code> - Stops and removes containers</li>
@@ -3950,18 +3960,21 @@ else
 fi
 
 # Check Watcher Service (health endpoint)
+
 if curl -s http://localhost:8000/health > /dev/null; then
-    echo "✅ Watcher Service is running"
+echo "✅ Watcher Service is running"
 else
-    echo "❌ Watcher Service failed to start"
+echo "❌ Watcher Service failed to start"
 fi
 
 # Check Configuration UIs
+
 if curl -s http://localhost:8080/ > /dev/null; then
-    echo "✅ Watcher Config UI is running on http://localhost:8080"
+echo "✅ Watcher Config UI is running on http://localhost:8080"
 else
-    echo "❌ Watcher Config UI failed to start"
+echo "❌ Watcher Config UI failed to start"
 fi</code></pre>
+
 <p><strong>How It Works:</strong></p>
 <ul>
     <li><code>curl -s</code> - Silent mode (no progress bar)</li>
@@ -4031,9 +4044,10 @@ echo 🚀 Starting SASA Software Microservices...
 REM Check if Docker is installed
 docker --version >nul 2>&1
 if %errorlevel% neq 0 (
-    echo ❌ Docker is not installed. Please install Docker first.
-    exit /b 1
+echo ❌ Docker is not installed. Please install Docker first.
+exit /b 1
 )</code></pre>
+
 <p><strong>Windows Specifics:</strong></p>
 <ul>
     <li><code>@echo off</code> - Disables command echoing</li>
